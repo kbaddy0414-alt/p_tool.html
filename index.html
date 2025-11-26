@@ -18,51 +18,54 @@
             line-height: 1.6;
             padding: 0;
             margin: 0;
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 15px;
+            padding: 10px;
         }
         
         .section {
             background-color: white;
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 12px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: #333;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             border-bottom: 1px solid #eee;
         }
         
         .form-group {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         
         .form-label {
-            width: 100px;
-            font-size: 14px;
+            width: 80px;
+            font-size: 12px;
             font-weight: 500;
+            flex-shrink: 0;
         }
         
         .form-input {
             flex: 1;
-            height: 36px;
-            padding: 0 10px;
+            height: 32px;
+            padding: 0 8px;
             border: 1px solid #cccccc;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 11px;
             background-color: white;
+            min-width: 0;
         }
         
         .form-input:focus {
@@ -77,16 +80,16 @@
         
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
+            margin-top: 12px;
         }
         
         .btn {
             flex: 1;
-            height: 44px;
+            height: 40px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: bold;
             color: white;
             cursor: pointer;
@@ -119,12 +122,12 @@
         
         .result-box {
             text-align: center;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
             border: 2px solid #dddddd;
             background-color: white;
-            margin-top: 15px;
-            font-size: 20px;
+            margin-top: 12px;
+            font-size: 16px;
             font-weight: bold;
         }
         
@@ -142,22 +145,29 @@
         
         .hit-data-container {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            padding: 10px;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            padding: 8px;
             background-color: #f9f9f9;
             border-radius: 5px;
         }
         
         .hit-field {
             flex: 1;
+            min-width: 80px;
+        }
+        
+        .hit-field input {
+            width: 100%;
+            font-size: 11px;
         }
         
         .ratio-display {
             background-color: #ffe8e8;
             text-align: center;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             color: #000000;
         }
         
@@ -167,6 +177,78 @@
         
         .ratio-medium {
             background-color: #fff8e8;
+        }
+
+        /* スマホ用の調整 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+            
+            .section {
+                padding: 10px;
+                margin-bottom: 12px;
+            }
+            
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 10px;
+            }
+            
+            .form-label {
+                width: 100%;
+                margin-bottom: 4px;
+                font-size: 11px;
+            }
+            
+            .form-input {
+                width: 100%;
+                height: 36px;
+                font-size: 14px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                height: 44px;
+                font-size: 16px;
+            }
+            
+            .hit-data-container {
+                flex-direction: column;
+            }
+            
+            .hit-field {
+                width: 100%;
+            }
+            
+            .result-box {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+
+        /* タブレット用の調整 */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container {
+                max-width: 95%;
+                padding: 12px;
+            }
+            
+            .form-label {
+                width: 90px;
+            }
+        }
+
+        /* PC用の調整 */
+        @media (min-width: 769px) {
+            .container {
+                max-width: 800px;
+                padding: 15px;
+            }
         }
     </style>
 </head>
