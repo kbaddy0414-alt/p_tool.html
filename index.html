@@ -120,6 +120,14 @@
             background-color: #e68900;
         }
         
+        .btn-memo {
+            background-color: #9C27B0;
+        }
+        
+        .btn-memo:hover {
+            background-color: #7B1FA2;
+        }
+        
         .result-box {
             text-align: center;
             padding: 15px;
@@ -358,6 +366,7 @@
             <div class="button-group">
                 <button class="btn btn-save" id="save_button">データ保存</button>
                 <button class="btn btn-load" id="load_button">データ読み込み</button>
+                <button class="btn btn-memo" id="memo_button">メモ帳に保存</button>
             </div>
         </div>
         
@@ -454,6 +463,7 @@
             document.getElementById('save_button').addEventListener('click', saveData);
             document.getElementById('load_button').addEventListener('click', loadData);
             document.getElementById('start_button').addEventListener('click', addFirstHitFields);
+            document.getElementById('memo_button').addEventListener('click', saveToMemoApp);
             
             // 背景タップでキーボードを閉じる
             document.body.addEventListener('click', function(e) {
@@ -466,6 +476,114 @@
         // キーボードを閉じる
         function closeKeyboard() {
             document.activeElement.blur();
+        }
+        
+        // メモ帳アプリに保存する関数
+        function saveToMemoApp() {
+            // 現在のデータを収集
+            const currentData = collectCurrentData();
+            
+            // メモ帳用のテキストを作成
+            const memoText = createMemoText(currentData);
+            
+            // メモ帳アプリを開く
+            openMemoApp(memoText);
+        }
+        
+        // 現在のデータを収集
+        function collectCurrentData() {
+            const data = {
+                date: new Date().toLocaleString('ja-JP'),
+                exchangeRate: document.getElementById('exchange_rate_input').value,
+                probability: document.getElementById('probability_input').value,
+                givenBalls: document.getElementById('given_balls_input').value,
+                receivedBalls: document.getElementById('received_balls_input').value,
+                cashInvestment: document.getElementById('cash_input').value,
+                ballInvestment: document.getElementById('ball_investment_input').value,
+                ownedBalls: document.getElementById('owned_balls_input').value,
+                ballRatio: document.getElementById('ball_ratio_input').value,
+                totalRotation: document.getElementById('rotation_display').textContent,
+                rate: document.getElementById('rate_display').textContent,
+                equivalentBorder: document.getElementById('border_display').textContent,
+                ownedUnitPrice: document.getElementById('unit_price_display').textContent,
+                cashUnitPrice: document.getElementById('cash_unit_price_display').textContent,
+                ballPerRound: document.getElementById('ball_per_round_display').textContent,
+                jobAmount: document.getElementById('result_label').textContent,
+                profit: document.getElementById('profit_label').textContent,
+                hitData: []
+            };
+            
+            // 初当りデータを収集
+            for (let i = 1; i <= firstHitCount; i++) {
+                const fieldSetId = `hit_${i}`;
+                const hitData = {
+                    rotation: document.getElementById(`${fieldSetId}_rotation`)?.value || '',
+                    balls: document.getElementById(`${fieldSetId}_balls`)?.value || '',
+                    rounds: document.getElementById(`${fieldSetId}_rounds`)?.value || '',
+                    time: document.getElementById(`${fieldSetId}_time`)?.value || ''
+                };
+                data.hitData.push(hitData);
+            }
+            
+            return data;
+        }
+        
+        // メモ帳用のテキストを作成
+        function createMemoText(data) {
+            let text = `🎰 パチンコ計算データ\n`;
+            text += `日時: ${data.date}\n\n`;
+            
+            text += `【機種データ】\n`;
+            text += `交換率: ${data.exchangeRate}\n`;
+            text += `トータル確率: ${data.probability}\n`;
+            text += `渡玉: ${data.givenBalls || '0'}\n`;
+            text += `受玉: ${data.receivedBalls || '0'}\n`;
+            text += `現金投資: ${data.cashInvestment || '0'}\n`;
+            text += `貯玉投資: ${data.ballInvestment || '0'}\n`;
+            text += `持ち玉: ${data.ownedBalls || '0'}\n`;
+            text += `持玉比率: ${data.ballRatio || '0.0%'}\n\n`;
+            
+            if (data.hitData.length > 0) {
+                text += `【初当りデータ】\n`;
+                data.hitData.forEach((hit, index) => {
+                    if (hit.rotation || hit.balls || hit.rounds || hit.time) {
+                        text += `#${index + 1}: 回転${hit.rotation} / 出玉${hit.balls} / ラウンド${hit.rounds} / 時短${hit.time}\n`;
+                    }
+                });
+                text += `\n`;
+            }
+            
+            text += `【計算結果】\n`;
+            text += `通常回転数: ${data.totalRotation}\n`;
+            text += `回転率: ${data.rate}\n`;
+            text += `等価ボーダー: ${data.equivalentBorder}\n`;
+            text += `持ち玉単価: ${data.ownedUnitPrice}\n`;
+            text += `現金単価: ${data.cashUnitPrice}\n`;
+            text += `1R出玉: ${data.ballPerRound}\n`;
+            text += `${data.jobAmount}\n`;
+            text += `${data.profit}\n\n`;
+            
+            text += `※このデータはパチンコ計算ツールで作成されました`;
+            
+            return text;
+        }
+        
+        // メモ帳アプリを開く
+        function openMemoApp(text) {
+            // メールtoプロトコルを使用（iOS/Androidでメモ帳アプリを開く）
+            const subject = encodeURIComponent('パチンコ計算データ');
+            const body = encodeURIComponent(text);
+            
+            // メーラーを開く（メモ帳アプリへの近道）
+            const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+            
+            // リンクを開く
+            window.location.href = mailtoLink;
+            
+            // ユーザーに説明を表示
+            setTimeout(() => {
+                alert('メーラーが開きました！\n\n【保存方法】\n1. 本文を全選択（コピー）\n2. メモ帳アプリを開く\n3. 新しいメモを作成\n4. コピーしたテキストを貼り付け\n5. 保存してください');
+            }, 1000);
         }
         
         // データ保存関数
