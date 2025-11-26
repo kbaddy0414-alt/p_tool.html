@@ -166,11 +166,11 @@
         }
         
         .ratio-input {
-            background-color: #ffe8e8;
             text-align: center;
             font-weight: bold;
             font-size: 12px;
             color: #000000;
+            background-color: #ffe8e8;
         }
         
         .ratio-good {
@@ -181,12 +181,12 @@
             background-color: #fff8e8;
         }
 
-        .calculation-row {
+        .calculation-display {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
-            padding: 6px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #f0f0f0;
         }
 
@@ -202,8 +202,8 @@
             color: #333;
             background: none;
             border: none;
-            text-align: right;
-            width: 80px;
+            padding: 0;
+            margin: 0;
         }
 
         /* スマホ用の調整 */
@@ -263,7 +263,7 @@
                 padding: 12px;
             }
 
-            .calculation-row {
+            .calculation-display {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 4px;
@@ -347,7 +347,7 @@
             
             <div class="form-group">
                 <label class="form-label">持玉比率</label>
-                <input type="text" class="form-input ratio-input" id="ball_ratio_input" placeholder="0.0%">
+                <input type="text" class="form-input ratio-input" id="ball_ratio_input" placeholder="0.0%" value="120.0%">
             </div>
         </div>
         
@@ -376,32 +376,32 @@
         <div class="section">
             <div class="section-title">仕事量計算</div>
             
-            <div class="calculation-row">
+            <div class="calculation-display">
                 <span class="calculation-label">通常回転数</span>
                 <span class="calculation-value" id="rotation_display">0</span>
             </div>
             
-            <div class="calculation-row">
+            <div class="calculation-display">
                 <span class="calculation-label">回転率</span>
                 <span class="calculation-value" id="rate_display">0.00</span>
             </div>
             
-            <div class="calculation-row">
+            <div class="calculation-display">
                 <span class="calculation-label">等価ボーダー</span>
                 <span class="calculation-value" id="border_display">0.00</span>
             </div>
             
-            <div class="calculation-row">
+            <div class="calculation-display">
                 <span class="calculation-label">持ち玉単価</span>
                 <span class="calculation-value" id="unit_price_display">0.00</span>
             </div>
             
-            <div class="calculation-row">
+            <div class="calculation-display">
                 <span class="calculation-label">現金単価</span>
                 <span class="calculation-value" id="cash_unit_price_display">0.00</span>
             </div>
             
-            <div class="calculation-row">
+            <div class="calculation-display">
                 <span class="calculation-label">1R出玉</span>
                 <span class="calculation-value" id="ball_per_round_display">0.00</span>
             </div>
@@ -435,7 +435,7 @@
         
         // イベントリスナーの設定
         function setupEventListeners() {
-            // 機種データ入力フィールド
+            // 機種データ入力フィールド（持ち玉比率を含む）
             const machineFields = [
                 'exchange_rate_input', 'probability_input', 'given_balls_input',
                 'received_balls_input', 'cash_input', 'ball_investment_input',
@@ -864,7 +864,7 @@
             // 結果表示を更新
             const resultLabel = document.getElementById('result_label');
             if (jobAmount !== null) {
-                resultLabel.textContent = `仕事量: ¥${jobAmount.toLocaleString()}`;
+                resultLabel.textContent = `仕事量: ¥${Math.round(jobAmount).toLocaleString()}`;
                 resultLabel.className = jobAmount >= 0 ? 'result-box positive' : 'result-box negative';
             } else {
                 resultLabel.textContent = "仕事量: 計算可能";
@@ -874,7 +874,7 @@
             // 収支表示を更新
             const profitLabel = document.getElementById('profit_label');
             if (profit !== null) {
-                profitLabel.textContent = `収支: ¥${profit.toLocaleString()}`;
+                profitLabel.textContent = `収支: ¥${Math.round(profit).toLocaleString()}`;
                 profitLabel.className = profit >= 0 ? 'result-box positive' : 'result-box negative';
             } else {
                 profitLabel.textContent = "収支: 計算中";
