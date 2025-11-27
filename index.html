@@ -989,8 +989,16 @@
             }, 1000);
         }
         
-        // データ保存関数
+        // データ保存関数（確認ダイアログ付き）
         function saveData() {
+            // 既存データがあるか確認
+            const existingData = localStorage.getItem(DATA_KEY);
+            if (existingData) {
+                if (!confirm('既存のデータを上書きしますか？\n\n「はい」→ 上書き保存\n「いいえ」→ キャンセル')) {
+                    return; // キャンセルの場合、処理を中断
+                }
+            }
+            
             const data = {
                 firstHitCount: firstHitCount,
                 firstHitData: {},
@@ -1038,13 +1046,56 @@
             }
         }
         
-        // データ読み込み関数
+        // データ読み込み関数（確認ダイアログ付き）
         function loadData() {
             try {
                 const dataStr = localStorage.getItem(DATA_KEY);
                 if (!dataStr) {
                     alert('保存されたデータがありません');
                     return;
+                }
+                
+                // 現在のデータがあるか確認（入力フィールドに値があるか）
+                let hasCurrentData = false;
+                const machineFields = [
+                    'exchange_rate_input', 'probability_input', 'given_balls_input',
+                    'received_balls_input', 'cash_input', 'ball_investment_input',
+                    'owned_balls_input', 'ball_ratio_input'
+                ];
+                
+                // 機種データの入力チェック
+                for (const fieldId of machineFields) {
+                    const field = document.getElementById(fieldId);
+                    if (field && field.value && field.value !== field.defaultValue) {
+                        hasCurrentData = true;
+                        break;
+                    }
+                }
+                
+                // 初当りデータの入力チェック
+                if (!hasCurrentData && firstHitCount > 0) {
+                    for (let i = 1; i <= firstHitCount; i++) {
+                        const fieldSetId = `hit_${i}`;
+                        const rotationField = document.getElementById(`${fieldSetId}_rotation`);
+                        const ballsField = document.getElementById(`${fieldSetId}_balls`);
+                        const roundsField = document.getElementById(`${fieldSetId}_rounds`);
+                        const timeField = document.getElementById(`${fieldSetId}_time`);
+                        
+                        if ((rotationField && rotationField.value) ||
+                            (ballsField && ballsField.value) ||
+                            (roundsField && roundsField.value) ||
+                            (timeField && timeField.value)) {
+                            hasCurrentData = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // 現在のデータがある場合は確認ダイアログを表示
+                if (hasCurrentData) {
+                    if (!confirm('現在のデータが失われますがよろしいですか？\n\n「はい」→ 読み込み実行\n「いいえ」→ キャンセル')) {
+                        return; // キャンセルの場合、処理を中断
+                    }
                 }
                 
                 const data = JSON.parse(dataStr);
