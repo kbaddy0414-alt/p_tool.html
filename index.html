@@ -20,6 +20,135 @@
             margin: 0;
             min-height: 100vh;
         }
+
+        /* ヘッダーとハンバーガーメニュー */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* ハンバーガーメニュー */
+        .hamburger-menu {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 5px;
+        }
+
+        .hamburger-bar {
+            width: 100%;
+            height: 3px;
+            background-color: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* ナビゲーションメニュー */
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 60px 20px 20px;
+            overflow-y: auto;
+        }
+
+        .nav-menu.active {
+            right: 0;
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-section {
+            margin-bottom: 20px;
+        }
+
+        .nav-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .machine-item {
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .machine-item:hover {
+            background: #e3f2fd;
+            border-color: #667eea;
+        }
+
+        .machine-name {
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .machine-details {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .close-menu {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
         
         .container {
             max-width: 100%;
@@ -313,9 +442,86 @@
     </style>
 </head>
 <body>
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="header-content">
+            <div class="app-title">🎰 パチンコ計算ツール</div>
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <div class="hamburger-bar"></div>
+                <div class="hamburger-bar"></div>
+                <div class="hamburger-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ナビゲーションメニュー -->
+    <div class="nav-overlay" id="navOverlay"></div>
+    <div class="nav-menu" id="navMenu">
+        <button class="close-menu" id="closeMenu">×</button>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">🏆 人気機種一覧</div>
+            
+            <div class="machine-item" onclick="loadMachineData('evol')">
+                <div class="machine-name">CR EVOL</div>
+                <div class="machine-details">確率: 1/9.9 | 交換率: 4.0 | ボーダー: 20.0</div>
+            </div>
+            
+            <div class="machine-item" onclick="loadMachineData('pawa')">
+                <div class="machine-name">P AWAKENING</div>
+                <div class="machine-details">確率: 1/9.5 | 交換率: 4.0 | ボーダー: 19.5</div>
+            </div>
+            
+            <div class="machine-item" onclick="loadMachineData('fever')">
+                <div class="machine-name">FEVER BREAK</div>
+                <div class="machine-details">確率: 1/10.5 | 交換率: 3.8 | ボーダー: 21.0</div>
+            </div>
+            
+            <div class="machine-item" onclick="loadMachineData('god')">
+                <div class="machine-name">GOD EG</div>
+                <div class="machine-details">確率: 1/8.9 | 交換率: 4.2 | ボーダー: 18.0</div>
+            </div>
+            
+            <div class="machine-item" onclick="loadMachineData('shinobi')">
+                <div class="machine-name">SHINOBI</div>
+                <div class="machine-details">確率: 1/11.2 | 交換率: 3.6 | ボーダー: 22.5</div>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">💫 新台機種</div>
+            
+            <div class="machine-item" onclick="loadMachineData('new1')">
+                <div class="machine-name">新台 月虹</div>
+                <div class="machine-details">確率: 1/10.1 | 交換率: 3.9 | ボーダー: 20.5</div>
+            </div>
+            
+            <div class="machine-item" onclick="loadMachineData('new2')">
+                <div class="machine-name">新台 雷神</div>
+                <div class="machine-details">確率: 1/9.8 | 交換率: 4.1 | ボーダー: 19.8</div>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔧 設定ツール</div>
+            
+            <div class="machine-item" onclick="saveData()">
+                <div class="machine-name">💾 データを保存</div>
+            </div>
+            
+            <div class="machine-item" onclick="loadData()">
+                <div class="machine-name">📂 データを読み込み</div>
+            </div>
+            
+            <div class="machine-item" onclick="saveToMemoApp()">
+                <div class="machine-name">📝 メモ帳に保存</div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- 機種データセクション -->
-        <div class="section">
+        <div class="section" id="machine-data">
             <div class="section-title">機種データ</div>
             
             <div class="form-group">
@@ -360,7 +566,7 @@
         </div>
         
         <!-- データ管理セクション -->
-        <div class="section">
+        <div class="section" id="data-management">
             <div class="section-title">データ管理</div>
             
             <div class="button-group">
@@ -371,7 +577,7 @@
         </div>
         
         <!-- 初当りデータセクション -->
-        <div class="section">
+        <div class="section" id="hit-data">
             <div class="section-title">初当りデータ</div>
             
             <button class="btn btn-add" id="start_button">データを追加</button>
@@ -382,7 +588,7 @@
         </div>
         
         <!-- 仕事量計算セクション -->
-        <div class="section">
+        <div class="section" id="calculation">
             <div class="section-title">仕事量計算</div>
             
             <div class="calculation-display">
@@ -433,6 +639,38 @@
         // データ保存用のキー
         const DATA_KEY = 'pachinko_data';
         
+        // 機種データの定義
+        const machineData = {
+            'evol': {
+                probability: '9.9',
+                exchangeRate: '4.0'
+            },
+            'pawa': {
+                probability: '9.5',
+                exchangeRate: '4.0'
+            },
+            'fever': {
+                probability: '10.5',
+                exchangeRate: '3.8'
+            },
+            'god': {
+                probability: '8.9',
+                exchangeRate: '4.2'
+            },
+            'shinobi': {
+                probability: '11.2',
+                exchangeRate: '3.6'
+            },
+            'new1': {
+                probability: '10.1',
+                exchangeRate: '3.9'
+            },
+            'new2': {
+                probability: '9.8',
+                exchangeRate: '4.1'
+            }
+        };
+        
         // DOMの読み込み完了後に実行
         document.addEventListener('DOMContentLoaded', function() {
             // イベントリスナーの設定
@@ -465,12 +703,40 @@
             document.getElementById('start_button').addEventListener('click', addFirstHitFields);
             document.getElementById('memo_button').addEventListener('click', saveToMemoApp);
             
+            // ハンバーガーメニュー
+            document.getElementById('hamburgerMenu').addEventListener('click', toggleMenu);
+            document.getElementById('closeMenu').addEventListener('click', toggleMenu);
+            document.getElementById('navOverlay').addEventListener('click', toggleMenu);
+            
             // 背景タップでキーボードを閉じる
             document.body.addEventListener('click', function(e) {
                 if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
                     closeKeyboard();
                 }
             });
+        }
+        
+        // ハンバーガーメニューの開閉
+        function toggleMenu() {
+            const navMenu = document.getElementById('navMenu');
+            const navOverlay = document.getElementById('navOverlay');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            
+            navMenu.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+            hamburgerMenu.classList.toggle('active');
+        }
+        
+        // 機種データを読み込む
+        function loadMachineData(machineId) {
+            const data = machineData[machineId];
+            if (data) {
+                document.getElementById('probability_input').value = data.probability;
+                document.getElementById('exchange_rate_input').value = data.exchangeRate;
+                calculateAll();
+                toggleMenu(); // メニューを閉じる
+                alert('機種データを読み込みました！');
+            }
         }
         
         // キーボードを閉じる
@@ -488,6 +754,8 @@
             
             // メモ帳アプリを開く
             openMemoApp(memoText);
+            
+            toggleMenu(); // メニューを閉じる
         }
         
         // 現在のデータを収集
