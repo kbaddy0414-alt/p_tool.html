@@ -100,7 +100,7 @@
         }
 
         .nav-section {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .nav-section-title {
@@ -108,8 +108,41 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #667eea;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav-section-title:hover {
+            background: #e3f2fd;
+            border-color: #667eea;
+        }
+
+        .nav-section-title::after {
+            content: '▼';
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-section-title.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .nav-section-content {
+            max-height: 300px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .nav-section-content.collapsed {
+            max-height: 0;
+            overflow: hidden;
         }
 
         .machine-item {
@@ -460,35 +493,72 @@
         <button class="close-menu" id="closeMenu">×</button>
         
         <div class="nav-section">
-            <div class="nav-section-title">🏆 人気機種一覧</div>
-            
-            <div class="machine-item" onclick="loadMachineData('evol')">
-                <div class="machine-name">CR EVOL</div>
-                <div class="machine-details">確率: 1/9.9 | 交換率: 4.0 | ボーダー: 20.0</div>
+            <div class="nav-section-title" onclick="toggleSection('popular-machines')">🏆 人気機種一覧</div>
+            <div class="nav-section-content" id="popular-machines">
+                <div class="machine-item" onclick="loadMachineData('evol')">
+                    <div class="machine-name">CR EVOL</div>
+                    <div class="machine-details">確率: 1/9.9 | 交換率: 4.0 | ボーダー: 20.0</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('pawa')">
+                    <div class="machine-name">P AWAKENING</div>
+                    <div class="machine-details">確率: 1/9.5 | 交換率: 4.0 | ボーダー: 19.5</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('fever')">
+                    <div class="machine-name">FEVER BREAK</div>
+                    <div class="machine-details">確率: 1/10.5 | 交換率: 3.8 | ボーダー: 21.0</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('god')">
+                    <div class="machine-name">GOD EG</div>
+                    <div class="machine-details">確率: 1/8.9 | 交換率: 4.2 | ボーダー: 18.0</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('shinobi')">
+                    <div class="machine-name">SHINOBI</div>
+                    <div class="machine-details">確率: 1/11.2 | 交換率: 3.6 | ボーダー: 22.5</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('hokuto')">
+                    <div class="machine-name">北斗の拳</div>
+                    <div class="machine-details">確率: 1/10.8 | 交換率: 3.7 | ボーダー: 21.8</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('mario')">
+                    <div class="machine-name">スーパーマリオ</div>
+                    <div class="machine-details">確率: 1/9.2 | 交換率: 4.1 | ボーダー: 18.8</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('onepiece')">
+                    <div class="machine-name">ONE PIECE</div>
+                    <div class="machine-details">確率: 1/10.2 | 交換率: 3.9 | ボーダー: 20.8</div>
+                </div>
             </div>
-            
-            <div class="machine-item" onclick="loadMachineData('pawa')">
-                <div class="machine-name">P AWAKENING</div>
-                <div class="machine-details">確率: 1/9.5 | 交換率: 4.0 | ボーダー: 19.5</div>
-            </div>
-            
-            <div class="machine-item" onclick="loadMachineData('fever')">
-                <div class="machine-name">FEVER BREAK</div>
-                <div class="machine-details">確率: 1/10.5 | 交換率: 3.8 | ボーダー: 21.0</div>
-            </div>
-            
-            <div class="machine-item" onclick="loadMachineData('god')">
-                <div class="machine-name">GOD EG</div>
-                <div class="machine-details">確率: 1/8.9 | 交換率: 4.2 | ボーダー: 18.0</div>
-            </div>
-            
-            <div class="machine-item" onclick="loadMachineData('shinobi')">
-                <div class="machine-name">SHINOBI</div>
-                <div class="machine-details">確率: 1/11.2 | 交換率: 3.6 | ボーダー: 22.5</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title" onclick="toggleSection('classic-machines')">🎯 定番機種</div>
+            <div class="nav-section-content collapsed" id="classic-machines">
+                <div class="machine-item" onclick="loadMachineData('goku')">
+                    <div class="machine-name">ドラゴンボール</div>
+                    <div class="machine-details">確率: 1/9.8 | 交換率: 4.0 | ボーダー: 19.6</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('evangelion')">
+                    <div class="machine-name">エヴァンゲリオン</div>
+                    <div class="machine-details">確率: 1/10.1 | 交換率: 3.9 | ボーダー: 20.5</div>
+                </div>
+                
+                <div class="machine-item" onclick="loadMachineData('kamen')">
+                    <div class="machine-name">仮面ライダー</div>
+                    <div class="machine-details">確率: 1/9.6 | 交換率: 4.0 | ボーダー: 19.2</div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- コンテナ部分は変更なし -->
     <div class="container">
         <!-- 機種データセクション -->
         <div class="section" id="machine-data">
@@ -609,7 +679,7 @@
         // データ保存用のキー
         const DATA_KEY = 'pachinko_data';
         
-        // 機種データの定義
+        // 機種データの定義（追加）
         const machineData = {
             'evol': {
                 probability: '9.9',
@@ -630,6 +700,30 @@
             'shinobi': {
                 probability: '11.2',
                 exchangeRate: '3.6'
+            },
+            'hokuto': {
+                probability: '10.8',
+                exchangeRate: '3.7'
+            },
+            'mario': {
+                probability: '9.2',
+                exchangeRate: '4.1'
+            },
+            'onepiece': {
+                probability: '10.2',
+                exchangeRate: '3.9'
+            },
+            'goku': {
+                probability: '9.8',
+                exchangeRate: '4.0'
+            },
+            'evangelion': {
+                probability: '10.1',
+                exchangeRate: '3.9'
+            },
+            'kamen': {
+                probability: '9.6',
+                exchangeRate: '4.0'
             }
         };
         
@@ -641,6 +735,15 @@
             // 初期計算を実行
             calculateAll();
         });
+        
+        // セクションの開閉を切り替える関数
+        function toggleSection(sectionId) {
+            const sectionContent = document.getElementById(sectionId);
+            const sectionTitle = sectionContent.previousElementSibling;
+            
+            sectionContent.classList.toggle('collapsed');
+            sectionTitle.classList.toggle('collapsed');
+        }
         
         // イベントリスナーの設定
         function setupEventListeners() {
@@ -705,6 +808,9 @@
         function closeKeyboard() {
             document.activeElement.blur();
         }
+        
+        // 以下は既存の関数（saveToMemoApp, collectCurrentData, createMemoText, openMemoApp, saveData, loadData, addFirstHitFields, createTextField, calculateJobAmount, calculateProfit, calculateEquivalentBorder, calculateUnitPrices, calculateTotalRotation, calculateTotalBallsAndRounds, calculateAll）は変更なし
+        // 実際の実装ではこれらの関数も含める必要があります
         
         // メモ帳アプリに保存する関数
         function saveToMemoApp() {
@@ -947,7 +1053,7 @@
             const roundsField = createTextField(fieldSetId, 'rounds', 'ラウンド');
             fieldContainer.appendChild(roundsField);
             
-            // 時短フィール드
+            // 時短フィールド
             const timeField = createTextField(fieldSetId, 'time', '時短');
             fieldContainer.appendChild(timeField);
             
@@ -1049,7 +1155,7 @@
             }
         }
         
-// 初当りデータから通常回転数を計算
+        // 初当りデータから通常回転数を計算
         function calculateTotalRotation() {
             if (firstHitCount === 0) {
                 return 0;
