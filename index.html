@@ -404,6 +404,32 @@
             margin: 0;
         }
 
+        /* データ消失注意書き */
+        .warning-section {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 10px;
+            font-size: 12px;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .warning-content {
+            color: #856404;
+            line-height: 1.4;
+        }
+
+        .warning-content p {
+            margin-bottom: 4px;
+        }
+
         /* スマホ用の調整 */
         @media (max-width: 480px) {
             .container {
@@ -477,6 +503,15 @@
             .calculation-value {
                 width: 100%;
                 text-align: left;
+            }
+
+            .warning-section {
+                margin: 10px 8px;
+                padding: 10px;
+            }
+            
+            .warning-content {
+                font-size: 11px;
             }
         }
 
@@ -703,6 +738,16 @@
             
             <div class="result-box" id="profit_label">
                 収支: ¥0
+            </div>
+        </div>
+
+        <!-- データ消失注意書き -->
+        <div class="warning-section">
+            <div class="warning-title">⚠️ データ保存についての注意</div>
+            <div class="warning-content">
+                <p>・データはブラウザ内に保存されます</p>
+                <p>・キャッシュ削除や長期放置で消えることがあります</p>
+                <p>・重要なデータは「メモ帳に保存」でバックアップしてください</p>
             </div>
         </div>
     </div>
