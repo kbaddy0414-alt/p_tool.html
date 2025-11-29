@@ -565,59 +565,19 @@
         <div class="nav-section">
             <div class="nav-section-title" onclick="toggleSection('popular-machines')">🏆 人気機種一覧</div>
             <div class="nav-section-content" id="popular-machines">
-                <div class="machine-item" onclick="loadMachineData('evol')">
-                    <div class="machine-name">CR EVOL</div>
-                    <div class="machine-details">トータル確率: 1/9.9</div>
+                <div class="machine-item" onclick="loadMachineData('p_umi5')">
+                    <div class="machine-name">P大海物語5</div>
+                    <div class="machine-details">トータル確率: 1/9.35</div>
                 </div>
                 
-                <div class="machine-item" onclick="loadMachineData('pawa')">
-                    <div class="machine-name">P AWAKENING</div>
+                <div class="machine-item" onclick="loadMachineData('p_evangelion15')">
+                    <div class="machine-name">P新世紀エヴァンゲリオン15 未来への咆哮</div>
                     <div class="machine-details">トータル確率: 1/9.5</div>
                 </div>
                 
-                <div class="machine-item" onclick="loadMachineData('fever')">
-                    <div class="machine-name">FEVER BREAK</div>
-                    <div class="machine-details">トータル確率: 1/10.5</div>
-                </div>
-                
-                <div class="machine-item" onclick="loadMachineData('god')">
-                    <div class="machine-name">GOD EG</div>
-                    <div class="machine-details">トータル確率: 1/8.9</div>
-                </div>
-                
-                <div class="machine-item" onclick="loadMachineData('shinobi')">
-                    <div class="machine-name">SHINOBI</div>
-                    <div class="machine-details">トータル確率: 1/11.2</div>
-                </div>
-                
-                <div class="machine-item" onclick="loadMachineData('hokuto')">
-                    <div class="machine-name">北斗の拳</div>
-                    <div class="machine-details">トータル確率: 1/10.8</div>
-                </div>
-                
-                <div class="machine-item" onclick="loadMachineData('mario')">
-                    <div class="machine-name">スーパーマリオ</div>
-                    <div class="machine-details">トータル確率: 1/9.2</div>
-                </div>
-                
-                <div class="machine-item" onclick="loadMachineData('onepiece')">
-                    <div class="machine-name">ONE PIECE</div>
-                    <div class="machine-details">トータル確率: 1/10.2</div>
-                </div>
-                
-                <div class="machine-item" onclick="loadMachineData('goku')">
-                    <div class="machine-name">ドラゴンボール</div>
+                <div class="machine-item" onclick="loadMachineData('e_tokyo_ghoul')">
+                    <div class="machine-name">e東京喰種(図柄揃い+チャージ)</div>
                     <div class="machine-details">トータル確率: 1/9.8</div>
-                </div>
-                
-                <div class="machine-item" onclick="loadMachineData('evangelion')">
-                    <div class="machine-name">エヴァンゲリオン</div>
-                    <div class="machine-details">トータル確率: 1/10.1</div>
-                </div>
-                
-                <div class="machine-item" onclick="loadMachineData('kamen')">
-                    <div class="machine-name">仮面ライダー</div>
-                    <div class="machine-details">トータル確率: 1/9.6</div>
                 </div>
             </div>
         </div>
@@ -762,38 +722,14 @@
         
         // 機種データの定義（トータル確率のみ）
         const machineData = {
-            'evol': {
-                probability: '9.9'
+            'p_umi5': {
+                probability: '9.35'
             },
-            'pawa': {
+            'p_evangelion15': {
                 probability: '9.5'
             },
-            'fever': {
-                probability: '10.5'
-            },
-            'god': {
-                probability: '8.9'
-            },
-            'shinobi': {
-                probability: '11.2'
-            },
-            'hokuto': {
-                probability: '10.8'
-            },
-            'mario': {
-                probability: '9.2'
-            },
-            'onepiece': {
-                probability: '10.2'
-            },
-            'goku': {
+            'e_tokyo_ghoul': {
                 probability: '9.8'
-            },
-            'evangelion': {
-                probability: '10.1'
-            },
-            'kamen': {
-                probability: '9.6'
             }
         };
         
@@ -1142,9 +1078,8 @@
                         const rotationField = document.getElementById(`${fieldSetId}_rotation`);
                         const ballsField = document.getElementById(`${fieldSetId}_balls`);
                         const roundsField = document.getElementById(`${fieldSetId}_rounds`);
-                        const timeField = document.getElementById(`${fieldSetId}_time`);
-                        
-                        if (rotationField && hitData.rotation) rotationField.value = hitData.rotation;
+                        const timeField = document.getElementById
+                    if (rotationField && hitData.rotation) rotationField.value = hitData.rotation;
                         if (ballsField && hitData.balls) ballsField.value = hitData.balls;
                         if (roundsField && hitData.rounds) roundsField.value = hitData.rounds;
                         if (timeField && hitData.time) timeField.value = hitData.time;
@@ -1466,4 +1401,4 @@
         }
     </script>
 </body>
-</html>
+</html>    
