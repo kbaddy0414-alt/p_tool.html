@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>収支管理カレンダー</title>
     <style>
-        /* CSSをここに全部貼り付け */
         * {
             margin: 0;
             padding: 0;
@@ -57,7 +56,6 @@
             background: #34495e;
             color: white;
             font-weight: bold;
-            border-radius: 8px 8px 0 0;
         }
 
         .weekday {
@@ -73,24 +71,15 @@
         .week {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            border-bottom: 1px solid #ecf0f1;
-        }
-
-        .week:last-child {
-            border-bottom: none;
         }
 
         .day {
             min-height: 120px;
             padding: 10px;
-            border-right: 1px solid #ecf0f1;
+            border: 1px solid #ecf0f1;
             position: relative;
             cursor: pointer;
             transition: background-color 0.2s;
-        }
-
-        .day:last-child {
-            border-right: none;
         }
 
         .day:hover {
@@ -102,11 +91,26 @@
             cursor: default;
         }
 
+        .day.sunday {
+            background: #fff5f5;
+        }
+
+        .day.saturday {
+            background: #f0f8ff;
+        }
+
         .day-number {
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 5px;
-            color: #2c3e50;
+        }
+
+        .day.sunday .day-number {
+            color: #e74c3c;
+        }
+
+        .day.saturday .day-number {
+            color: #3498db;
         }
 
         .income {
@@ -248,7 +252,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="month-year" id="current-month">2025年11月</div>
+            <div class="month-year" id="current-month">2025年12月</div>
             <div class="total-amount" id="total-amount">0円</div>
         </div>
 
@@ -316,10 +320,9 @@
     </div>
 
     <script>
-        // JavaScriptをここに全部貼り付け
         class FinanceCalendar {
             constructor() {
-                this.currentDate = new Date();
+                this.currentDate = new Date(2025, 11, 1); // 2025年12月
                 this.db = null;
                 this.init();
             }
@@ -367,35 +370,44 @@
 
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
-                const startDay = firstDay.getDay();
+                const startDay = firstDay.getDay(); // 0=日曜日
 
                 let currentDate = 1;
                 const totalDays = lastDay.getDate();
 
-                for (let week = 0; week < 6; week++) {
-                    const weekDiv = document.createElement('div');
-                    weekDiv.className = 'week';
+                // カレンダーグリッドを作成
+                let currentWeek = document.createElement('div');
+                currentWeek.className = 'week';
+                calendarGrid.appendChild(currentWeek);
 
-                    for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
-                        const dayDiv = document.createElement('div');
-                        dayDiv.className = 'day';
+                // 最初の週の空白セルを追加
+                for (let i = 0; i < startDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'day empty';
+                    currentWeek.appendChild(emptyDay);
+                }
 
-                        if (week === 0 && dayOfWeek < startDay) {
-                            dayDiv.className += ' empty';
-                        } else if (currentDate > totalDays) {
-                            dayDiv.className += ' empty';
-                        } else {
-                            dayDiv.innerHTML = `<div class="day-number">${currentDate}</div>`;
-                            dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(currentDate).padStart(2, '0')}`;
-                            
-                            this.renderDayTransactions(dayDiv, year, month, currentDate);
-                            currentDate++;
-                        }
-
-                        weekDiv.appendChild(dayDiv);
+                // 日付セルを追加
+                for (let date = 1; date <= totalDays; date++) {
+                    // 日曜日で新しい週を開始
+                    if ((startDay + date - 1) % 7 === 0 && date > 1) {
+                        currentWeek = document.createElement('div');
+                        currentWeek.className = 'week';
+                        calendarGrid.appendChild(currentWeek);
                     }
 
-                    calendarGrid.appendChild(weekDiv);
+                    const dayDiv = document.createElement('div');
+                    const dayOfWeek = (startDay + date - 1) % 7;
+                    
+                    dayDiv.className = 'day';
+                    if (dayOfWeek === 0) dayDiv.classList.add('sunday');
+                    if (dayOfWeek === 6) dayDiv.classList.add('saturday');
+                    
+                    dayDiv.innerHTML = `<div class="day-number">${date}</div>`;
+                    dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                    
+                    this.renderDayTransactions(dayDiv, year, month, date);
+                    currentWeek.appendChild(dayDiv);
                 }
 
                 this.updateTotalAmount();
