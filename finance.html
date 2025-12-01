@@ -54,7 +54,7 @@
         .calendar-main {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            grid-template-rows: auto repeat(6, 80px); /* 高さを80pxに縮小 */
+            grid-template-rows: auto repeat(6, 80px);
             border: 1px solid #bdc3c7;
             border-radius: 8px;
             overflow: hidden;
@@ -74,10 +74,10 @@
             border-right: none;
         }
 
-        /* 日付セル - 正方形に近づける */
+        /* 日付セル */
         .day {
-            height: 80px; /* 高さを固定 */
-            padding: 5px; /* パディングを減らす */
+            height: 80px;
+            padding: 8px;
             border-right: 1px solid #ecf0f1;
             border-bottom: 1px solid #ecf0f1;
             position: relative;
@@ -86,7 +86,7 @@
             background: white;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            justify-content: space-between;
         }
 
         /* グリッドの最後の列と行のボーダーを削除 */
@@ -118,8 +118,6 @@
         .day-number {
             font-size: 1rem;
             font-weight: bold;
-            margin-bottom: 2px;
-            align-self: flex-start;
         }
 
         .day.sunday .day-number {
@@ -130,47 +128,27 @@
             color: #3498db;
         }
 
-        /* 収支表示のコンパクト化 */
-        .transaction-list {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-            overflow: hidden;
-        }
-
-        .income {
-            color: #27ae60;
+        /* 日計表示 - 中央に大きく表示 */
+        .daily-total {
+            font-size: 0.9rem;
             font-weight: bold;
-            font-size: 0.7rem; /* 文字を小さく */
-            line-height: 1;
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: auto;
+            line-height: 1.2;
         }
 
-        .expense {
-            color: #e74c3c;
-            font-weight: bold;
-            font-size: 0.7rem; /* 文字を小さく */
-            line-height: 1;
-        }
-
-        .day-total {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            font-size: 0.6rem;
-            font-weight: bold;
-            padding: 1px 3px;
-            border-radius: 2px;
-        }
-
-        .day-total.positive {
-            background: #d5f4e6;
+        .daily-total.income {
             color: #27ae60;
         }
 
-        .day-total.negative {
-            background: #fadbd8;
+        .daily-total.expense {
             color: #e74c3c;
+        }
+
+        .daily-total.zero {
+            color: #7f8c8d;
+            font-size: 0.8rem;
         }
 
         .controls {
@@ -278,12 +256,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="month-year" id="current-month">2025年12月</div>
-            <div class="total-amount" id="total-amount">0円</div>
+            <div class="month-year" id="current-month">2025年11月</div>
+            <div class="total-amount" id="total-amount">32,000円</div>
         </div>
 
         <div class="calendar">
-            <!-- 単一のグリッドコンテナ -->
             <div class="calendar-main" id="calendar-main">
                 <!-- 曜日ヘッダー -->
                 <div class="weekday">日</div>
@@ -351,7 +328,7 @@
     <script>
         class FinanceCalendar {
             constructor() {
-                this.currentDate = new Date(2025, 11, 1); // 2025年12月
+                this.currentDate = new Date(2025, 10, 1); // 2025年11月
                 this.db = null;
                 this.init();
             }
@@ -428,17 +405,16 @@
                     // 基本構造
                     dayDiv.innerHTML = `
                         <div class="day-number">${date}</div>
-                        <div class="transaction-list"></div>
                     `;
                     dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
                     
-                    this.renderDayTransactions(dayDiv, year, month, date);
+                    this.renderDayTotal(dayDiv, year, month, date);
                     calendarMain.appendChild(dayDiv);
                 }
 
                 // 月末の空白セルを追加（合計42セルになるように）
                 const totalCells = startDay + totalDays;
-                const remainingCells = 42 - totalCells; // 6週間分
+                const remainingCells = 42 - totalCells;
                 for (let i = 0; i < remainingCells; i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'day empty';
@@ -448,42 +424,33 @@
                 this.updateTotalAmount();
             }
 
-            async renderDayTransactions(dayElement, year, month, day) {
+            async renderDayTotal(dayElement, year, month, day) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 
                 try {
                     const transactions = await this.getTransactionsByDate(dateStr);
-                    const transactionList = dayElement.querySelector('.transaction-list');
-                    let dayIncome = 0;
-                    let dayExpense = 0;
+                    let dayTotal = 0;
 
                     transactions.forEach(transaction => {
-                        const amount = parseInt(transaction.amount);
-                        const amountFormatted = this.formatAmount(amount);
-                        
-                        if (amount > 0) {
-                            dayIncome += amount;
-                            const incomeEl = document.createElement('div');
-                            incomeEl.className = 'income';
-                            incomeEl.textContent = `+${amountFormatted}`;
-                            transactionList.appendChild(incomeEl);
-                        } else {
-                            dayExpense += Math.abs(amount);
-                            const expenseEl = document.createElement('div');
-                            expenseEl.className = 'expense';
-                            expenseEl.textContent = amountFormatted;
-                            transactionList.appendChild(expenseEl);
-                        }
+                        dayTotal += parseInt(transaction.amount);
                     });
 
-                    const dayTotal = dayIncome - dayExpense;
+                    // 日計を表示
                     if (dayTotal !== 0) {
-                        const totalClass = dayTotal > 0 ? 'positive' : 'negative';
-                        const totalFormatted = this.formatAmount(Math.abs(dayTotal));
                         const totalEl = document.createElement('div');
-                        totalEl.className = `day-total ${totalClass}`;
-                        totalEl.textContent = `${dayTotal > 0 ? '+' : '-'}${totalFormatted}`;
+                        totalEl.className = `daily-total ${dayTotal > 0 ? 'income' : 'expense'}`;
+                        
+                        // 6桁まで全額表示（例: +123,456）
+                        const formattedAmount = this.formatFullAmount(Math.abs(dayTotal));
+                        totalEl.textContent = `${dayTotal > 0 ? '+' : ''}${formattedAmount}`;
+                        
                         dayElement.appendChild(totalEl);
+                    } else {
+                        // 取引がない場合は何も表示しない（または「0」と表示）
+                        // const zeroEl = document.createElement('div');
+                        // zeroEl.className = 'daily-total zero';
+                        // zeroEl.textContent = '0';
+                        // dayElement.appendChild(zeroEl);
                     }
 
                 } catch (error) {
@@ -491,11 +458,8 @@
                 }
             }
 
-            // 金額のフォーマット（コンパクトに表示）
-            formatAmount(amount) {
-                if (amount >= 10000) {
-                    return `${Math.floor(amount / 10000)}万`;
-                }
+            // 6桁まで全額表示（例: 123,456）
+            formatFullAmount(amount) {
                 return amount.toLocaleString();
             }
 
