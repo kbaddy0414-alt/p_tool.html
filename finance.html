@@ -14,18 +14,14 @@
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 10px;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .container {
-            max-width: 95vw;
-            margin: 0 auto;
+            width: 100vw;
+            height: 100vh;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
-            height: calc(100vh - 20px);
             display: flex;
             flex-direction: column;
         }
@@ -33,7 +29,7 @@
         .header {
             background: #2c3e50;
             color: white;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -51,11 +47,11 @@
         }
 
         .calendar {
-            padding: 15px;
             flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
+            padding: 0;
         }
 
         /* メインのカレンダーグリッド - 画面いっぱいに広げる */
@@ -64,10 +60,11 @@
             grid-template-columns: repeat(7, 1fr);
             grid-template-rows: auto repeat(6, 1fr);
             border: 1px solid #bdc3c7;
-            border-radius: 8px;
             overflow: hidden;
             flex: 1;
             min-height: 0;
+            width: 100%;
+            height: 100%;
         }
 
         /* 曜日ヘッダー */
@@ -272,13 +269,8 @@
 
         /* レスポンシブ対応 */
         @media (max-width: 768px) {
-            .container {
-                max-width: 98vw;
-                height: calc(100vh - 10px);
-            }
-            
             .header {
-                padding: 15px;
+                padding: 12px;
             }
             
             .month-year {
@@ -287,10 +279,6 @@
             
             .total-amount {
                 font-size: 1.8rem;
-            }
-            
-            .calendar {
-                padding: 10px;
             }
             
             .weekday {
