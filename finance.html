@@ -32,6 +32,7 @@
             padding: 15px;
             text-align: center;
             flex-shrink: 0;
+            position: relative;
         }
 
         .month-year {
@@ -40,10 +41,32 @@
             margin-bottom: 8px;
         }
 
+        .total-amount-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
         .total-amount {
             font-size: 2.2rem;
             font-weight: bold;
             color: #27ae60;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #2980b9;
         }
 
         .calendar {
@@ -54,18 +77,11 @@
             padding: 0;
         }
 
-        /* 曜日ヘッダーとナビゲーションボタンのコンテナ */
-        .calendar-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            position: relative;
-        }
-
         /* メインのカレンダーグリッド - 画面いっぱいに広げる */
         .calendar-main {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            grid-template-rows: repeat(6, 1fr);
+            grid-template-rows: auto repeat(6, 1fr);
             border: 1px solid #bdc3c7;
             overflow: hidden;
             flex: 1;
@@ -83,44 +99,15 @@
             font-weight: bold;
             border-right: 1px solid #2c3e50;
             font-size: 0.9rem;
-            position: relative;
         }
 
         .weekday:last-child {
             border-right: none;
         }
 
-        /* ナビゲーションボタン */
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            padding: 4px 8px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            transition: background-color 0.2s;
-            z-index: 10;
-        }
-
-        .nav-btn:hover {
-            background: #2980b9;
-        }
-
-        #prev-month {
-            left: 5px;
-        }
-
-        #next-month {
-            right: 5px;
-        }
-
-        /* 日付セル - 高さを1/3に縮小 */
+        /* 日付セル - 高さを元に戻す */
         .day {
-            padding: 2px;
+            padding: 5px;
             border-right: 1px solid #ecf0f1;
             border-bottom: 1px solid #ecf0f1;
             position: relative;
@@ -131,7 +118,6 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 0;
-            height: calc(100% / 6); /* 6行分なので1/6に設定 */
         }
 
         /* グリッドの最後の列と行のボーダーを削除 */
@@ -161,7 +147,7 @@
         }
 
         .day-number {
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: bold;
             line-height: 1;
         }
@@ -178,12 +164,11 @@
         .daily-total {
             font-weight: bold;
             text-align: center;
-            line-height: 1;
+            line-height: 1.1;
             word-break: break-all;
             overflow: hidden;
             max-height: 100%;
             transition: font-size 0.2s;
-            margin-top: 1px;
         }
 
         .daily-total.income {
@@ -201,7 +186,7 @@
         .controls {
             display: flex;
             justify-content: center;
-            padding: 10px;
+            padding: 15px;
             background: #ecf0f1;
             border-top: 1px solid #bdc3c7;
             flex-shrink: 0;
@@ -309,16 +294,15 @@
             }
             
             .day {
-                padding: 1px;
+                padding: 3px;
             }
             
             .day-number {
-                font-size: 0.7rem;
+                font-size: 0.8rem;
             }
             
-            .nav-btn {
-                padding: 3px 6px;
-                font-size: 0.6rem;
+            .daily-total {
+                font-size: 0.7rem;
             }
         }
 
@@ -337,12 +321,16 @@
             }
             
             .day-number {
-                font-size: 0.65rem;
+                font-size: 0.75rem;
             }
             
-            .add-btn {
+            .nav-btn, .add-btn {
                 padding: 6px 12px;
                 font-size: 0.8rem;
+            }
+            
+            .total-amount-container {
+                gap: 10px;
             }
         }
     </style>
@@ -350,29 +338,25 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="month-year" id="current-month">2025年11月</div>
-            <div class="total-amount" id="total-amount">6,087,000円</div>
+            <div class="month-year" id="current-month">2025年12月</div>
+            <div class="total-amount-container">
+                <button class="nav-btn" id="prev-month">前月</button>
+                <div class="total-amount" id="total-amount">-1,005,000円</div>
+                <button class="nav-btn" id="next-month">次月</button>
+            </div>
         </div>
 
         <div class="calendar">
-            <div class="calendar-header">
+            <div class="calendar-main" id="calendar-main">
                 <!-- 曜日ヘッダー -->
-                <div class="weekday">
-                    日
-                    <button class="nav-btn" id="prev-month">前月</button>
-                </div>
+                <div class="weekday">日</div>
                 <div class="weekday">月</div>
                 <div class="weekday">火</div>
                 <div class="weekday">水</div>
                 <div class="weekday">木</div>
                 <div class="weekday">金</div>
-                <div class="weekday">
-                    土
-                    <button class="nav-btn" id="next-month">次月</button>
-                </div>
-            </div>
-            
-            <div class="calendar-main" id="calendar-main">
+                <div class="weekday">土</div>
+                
                 <!-- 日付セルはJavaScriptで動的に追加 -->
             </div>
         </div>
@@ -414,7 +398,7 @@
     <script>
         class FinanceCalendar {
             constructor() {
-                this.currentDate = new Date(2025, 10, 1); // 2025年11月
+                this.currentDate = new Date(2025, 11, 1); // 2025年12月
                 this.db = null;
                 this.init();
             }
@@ -452,8 +436,14 @@
 
             renderCalendar() {
                 const calendarMain = document.getElementById('calendar-main');
-                // 既存の日付セルをクリア
+                // 既存の日付セルをクリア（曜日ヘッダーは残す）
+                const weekdays = calendarMain.querySelectorAll('.weekday');
                 calendarMain.innerHTML = '';
+                
+                // 曜日ヘッダーを再追加
+                weekdays.forEach(weekday => {
+                    calendarMain.appendChild(weekday.cloneNode(true));
+                });
 
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth();
@@ -536,16 +526,16 @@
             // 金額に応じてフォントサイズを調整
             formatAmountWithFontSize(amount) {
                 const absAmount = Math.abs(amount);
-                let fontSize = '0.65rem'; // デフォルトサイズ（縮小）
+                let fontSize = '0.75rem'; // デフォルトサイズ
                 
                 // 7桁以上の場合、フォントサイズを小さくする
                 if (absAmount >= 1000000) {
-                    fontSize = '0.55rem';
+                    fontSize = '0.65rem';
                 }
                 
                 // 9桁以上の場合、さらに小さくする
                 if (absAmount >= 100000000) {
-                    fontSize = '0.45rem';
+                    fontSize = '0.55rem';
                 }
                 
                 const formattedAmount = absAmount.toLocaleString();
@@ -583,8 +573,10 @@
                         total += (transaction.returnAmount - transaction.investmentAmount);
                     });
 
-                    document.getElementById('total-amount').textContent = 
-                        `${total.toLocaleString()}円`;
+                    // マイナスの場合は赤字で表示
+                    const totalElement = document.getElementById('total-amount');
+                    totalElement.textContent = `${total.toLocaleString()}円`;
+                    totalElement.style.color = total >= 0 ? '#27ae60' : '#e74c3c';
 
                 } catch (error) {
                     console.error('合計金額の更新に失敗:', error);
