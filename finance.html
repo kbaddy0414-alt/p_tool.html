@@ -50,21 +50,19 @@
             padding: 20px;
         }
 
-        /* 曜日ヘッダーと日付のグリッドを完全に一致させる */
-        .calendar-grid {
+        /* メインのカレンダーグリッド */
+        .calendar-main {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: auto repeat(6, 80px); /* 高さを80pxに縮小 */
             border: 1px solid #bdc3c7;
             border-radius: 8px;
             overflow: hidden;
         }
 
-        .weekdays {
-            display: contents; /* グリッドコンテナの子要素として直接配置 */
-        }
-
+        /* 曜日ヘッダー */
         .weekday {
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             background: #34495e;
             color: white;
@@ -76,28 +74,27 @@
             border-right: none;
         }
 
-        .week {
-            display: contents; /* グリッドコンテナの子要素として直接配置 */
-        }
-
+        /* 日付セル - 正方形に近づける */
         .day {
-            min-height: 120px;
-            padding: 10px;
+            height: 80px; /* 高さを固定 */
+            padding: 5px; /* パディングを減らす */
             border-right: 1px solid #ecf0f1;
             border-bottom: 1px solid #ecf0f1;
             position: relative;
             cursor: pointer;
             transition: background-color 0.2s;
             background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* 最後の列の右ボーダーを削除 */
+        /* グリッドの最後の列と行のボーダーを削除 */
         .day:nth-child(7n) {
             border-right: none;
         }
 
-        /* 最後の行の下ボーダーを削除 */
-        .week:last-child .day {
+        .calendar-main > .day:nth-last-child(-n+7) {
             border-bottom: none;
         }
 
@@ -119,9 +116,10 @@
         }
 
         .day-number {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
+            align-self: flex-start;
         }
 
         .day.sunday .day-number {
@@ -132,18 +130,47 @@
             color: #3498db;
         }
 
+        /* 収支表示のコンパクト化 */
+        .transaction-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            overflow: hidden;
+        }
+
         .income {
             color: #27ae60;
             font-weight: bold;
-            font-size: 0.9rem;
-            margin: 2px 0;
+            font-size: 0.7rem; /* 文字を小さく */
+            line-height: 1;
         }
 
         .expense {
             color: #e74c3c;
             font-weight: bold;
-            font-size: 0.9rem;
-            margin: 2px 0;
+            font-size: 0.7rem; /* 文字を小さく */
+            line-height: 1;
+        }
+
+        .day-total {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 1px 3px;
+            border-radius: 2px;
+        }
+
+        .day-total.positive {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .day-total.negative {
+            background: #fadbd8;
+            color: #e74c3c;
         }
 
         .controls {
@@ -246,26 +273,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
-        .day-total {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .day-total.positive {
-            background: #d5f4e6;
-            color: #27ae60;
-        }
-
-        .day-total.negative {
-            background: #fadbd8;
-            color: #e74c3c;
-        }
     </style>
 </head>
 <body>
@@ -276,8 +283,8 @@
         </div>
 
         <div class="calendar">
-            <!-- 単一のグリッドコンテナで統一 -->
-            <div class="calendar-grid">
+            <!-- 単一のグリッドコンテナ -->
+            <div class="calendar-main" id="calendar-main">
                 <!-- 曜日ヘッダー -->
                 <div class="weekday">日</div>
                 <div class="weekday">月</div>
@@ -287,8 +294,7 @@
                 <div class="weekday">金</div>
                 <div class="weekday">土</div>
                 
-                <!-- 日付セル（ここに動的に追加） -->
-                <div id="calendar-cells"></div>
+                <!-- 日付セルはJavaScriptで動的に追加 -->
             </div>
         </div>
 
@@ -382,8 +388,15 @@
             }
 
             renderCalendar() {
-                const calendarCells = document.getElementById('calendar-cells');
-                calendarCells.innerHTML = '';
+                const calendarMain = document.getElementById('calendar-main');
+                // 既存の日付セルをクリア（曜日ヘッダーは残す）
+                const weekdays = calendarMain.querySelectorAll('.weekday');
+                calendarMain.innerHTML = '';
+                
+                // 曜日ヘッダーを再追加
+                weekdays.forEach(weekday => {
+                    calendarMain.appendChild(weekday.cloneNode(true));
+                });
 
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth();
@@ -400,7 +413,7 @@
                 for (let i = 0; i < startDay; i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'day empty';
-                    calendarCells.appendChild(emptyDay);
+                    calendarMain.appendChild(emptyDay);
                 }
 
                 // 日付セルを追加
@@ -412,11 +425,15 @@
                     if (dayOfWeek === 0) dayDiv.classList.add('sunday');
                     if (dayOfWeek === 6) dayDiv.classList.add('saturday');
                     
-                    dayDiv.innerHTML = `<div class="day-number">${date}</div>`;
+                    // 基本構造
+                    dayDiv.innerHTML = `
+                        <div class="day-number">${date}</div>
+                        <div class="transaction-list"></div>
+                    `;
                     dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
                     
                     this.renderDayTransactions(dayDiv, year, month, date);
-                    calendarCells.appendChild(dayDiv);
+                    calendarMain.appendChild(dayDiv);
                 }
 
                 // 月末の空白セルを追加（合計42セルになるように）
@@ -425,7 +442,7 @@
                 for (let i = 0; i < remainingCells; i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'day empty';
-                    calendarCells.appendChild(emptyDay);
+                    calendarMain.appendChild(emptyDay);
                 }
 
                 this.updateTotalAmount();
@@ -436,36 +453,50 @@
                 
                 try {
                     const transactions = await this.getTransactionsByDate(dateStr);
+                    const transactionList = dayElement.querySelector('.transaction-list');
                     let dayIncome = 0;
                     let dayExpense = 0;
 
                     transactions.forEach(transaction => {
                         const amount = parseInt(transaction.amount);
-                        const amountFormatted = amount.toLocaleString();
+                        const amountFormatted = this.formatAmount(amount);
                         
                         if (amount > 0) {
                             dayIncome += amount;
-                            dayElement.innerHTML += `<div class="income">+${amountFormatted}</div>`;
+                            const incomeEl = document.createElement('div');
+                            incomeEl.className = 'income';
+                            incomeEl.textContent = `+${amountFormatted}`;
+                            transactionList.appendChild(incomeEl);
                         } else {
                             dayExpense += Math.abs(amount);
-                            dayElement.innerHTML += `<div class="expense">${amountFormatted}</div>`;
+                            const expenseEl = document.createElement('div');
+                            expenseEl.className = 'expense';
+                            expenseEl.textContent = amountFormatted;
+                            transactionList.appendChild(expenseEl);
                         }
                     });
 
                     const dayTotal = dayIncome - dayExpense;
                     if (dayTotal !== 0) {
                         const totalClass = dayTotal > 0 ? 'positive' : 'negative';
-                        const totalFormatted = Math.abs(dayTotal).toLocaleString();
-                        dayElement.innerHTML += `
-                            <div class="day-total ${totalClass}">
-                                ${dayTotal > 0 ? '+' : '-'}${totalFormatted}
-                            </div>
-                        `;
+                        const totalFormatted = this.formatAmount(Math.abs(dayTotal));
+                        const totalEl = document.createElement('div');
+                        totalEl.className = `day-total ${totalClass}`;
+                        totalEl.textContent = `${dayTotal > 0 ? '+' : '-'}${totalFormatted}`;
+                        dayElement.appendChild(totalEl);
                     }
 
                 } catch (error) {
                     console.error('取引データの取得に失敗:', error);
                 }
+            }
+
+            // 金額のフォーマット（コンパクトに表示）
+            formatAmount(amount) {
+                if (amount >= 10000) {
+                    return `${Math.floor(amount / 10000)}万`;
+                }
+                return amount.toLocaleString();
             }
 
             async getTransactionsByDate(date) {
@@ -553,7 +584,7 @@
                     this.renderCalendar();
                 });
 
-                document.getElementById('calendar-cells').addEventListener('click', (e) => {
+                document.getElementById('calendar-main').addEventListener('click', (e) => {
                     const dayElement = e.target.closest('.day');
                     if (dayElement && dayElement.dataset.date && !dayElement.classList.contains('empty')) {
                         document.getElementById('transaction-date').value = dayElement.dataset.date;
