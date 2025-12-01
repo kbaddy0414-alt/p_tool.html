@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>収支管理カレンダー</title>
+    <title>投資収支管理カレンダー</title>
     <style>
         * {
             margin: 0;
@@ -137,15 +137,15 @@
             color: #3498db;
         }
 
-        /* 日計表示 - 小さなフォントでコンパクトに */
+        /* 日計表示 - 金額に応じてフォントサイズ調整 */
         .daily-total {
-            font-size: 0.75rem;
             font-weight: bold;
             text-align: center;
             line-height: 1.1;
             word-break: break-all;
             overflow: hidden;
             max-height: 100%;
+            transition: font-size 0.2s;
         }
 
         .daily-total.income {
@@ -158,7 +158,6 @@
 
         .daily-total.zero {
             color: #7f8c8d;
-            font-size: 0.7rem;
         }
 
         .controls {
@@ -293,10 +292,6 @@
             .day-number {
                 font-size: 0.8rem;
             }
-            
-            .daily-total {
-                font-size: 0.7rem;
-            }
         }
 
         @media (max-width: 480px) {
@@ -317,10 +312,6 @@
                 font-size: 0.75rem;
             }
             
-            .daily-total {
-                font-size: 0.65rem;
-            }
-            
             .nav-btn, .add-btn {
                 padding: 6px 12px;
                 font-size: 0.8rem;
@@ -332,7 +323,7 @@
     <div class="container">
         <div class="header">
             <div class="month-year" id="current-month">2025年11月</div>
-            <div class="total-amount" id="total-amount">32,000円</div>
+            <div class="total-amount" id="total-amount">6,087,000円</div>
         </div>
 
         <div class="calendar">
@@ -360,33 +351,19 @@
     <!-- モーダル -->
     <div class="modal" id="transaction-modal">
         <div class="modal-content">
-            <h3>取引を追加</h3>
+            <h3>投資取引を追加</h3>
             <form id="transaction-form">
                 <div class="form-group">
                     <label for="transaction-date">日付</label>
                     <input type="date" id="transaction-date" required>
                 </div>
                 <div class="form-group">
-                    <label for="transaction-type">種類</label>
-                    <select id="transaction-type" required>
-                        <option value="income">収入</option>
-                        <option value="expense">支出</option>
-                    </select>
+                    <label for="investment-amount">投資金額</label>
+                    <input type="number" id="investment-amount" required>
                 </div>
                 <div class="form-group">
-                    <label for="transaction-amount">金額</label>
-                    <input type="number" id="transaction-amount" required>
-                </div>
-                <div class="form-group">
-                    <label for="transaction-category">カテゴリ</label>
-                    <select id="transaction-category" required>
-                        <option value="給料">給料</option>
-                        <option value="副業">副業</option>
-                        <option value="食費">食費</option>
-                        <option value="交通費">交通費</option>
-                        <option value="娯楽">娯楽</option>
-                        <option value="その他">その他</option>
-                    </select>
+                    <label for="return-amount">回収金額</label>
+                    <input type="number" id="return-amount" required>
                 </div>
                 <div class="form-group">
                     <label for="transaction-description">説明</label>
@@ -507,7 +484,8 @@
                     let dayTotal = 0;
 
                     transactions.forEach(transaction => {
-                        dayTotal += parseInt(transaction.amount);
+                        // 回収金額 - 投資金額で計算
+                        dayTotal += (transaction.returnAmount - transaction.investmentAmount);
                     });
 
                     // 日計を表示
@@ -515,9 +493,9 @@
                         const totalEl = document.createElement('div');
                         totalEl.className = `daily-total ${dayTotal > 0 ? 'income' : 'expense'}`;
                         
-                        // 6桁まで全額表示（例: +123,456）
-                        const formattedAmount = this.formatFullAmount(Math.abs(dayTotal));
-                        totalEl.textContent = `${dayTotal > 0 ? '+' : '-'}${formattedAmount}`;
+                        // 金額に応じてフォントサイズを調整
+                        const formattedAmount = this.formatAmountWithFontSize(dayTotal);
+                        totalEl.innerHTML = formattedAmount;
                         
                         dayElement.appendChild(totalEl);
                     }
@@ -527,9 +505,25 @@
                 }
             }
 
-            // 6桁まで全額表示（例: 123,456）
-            formatFullAmount(amount) {
-                return amount.toLocaleString();
+            // 金額に応じてフォントサイズを調整
+            formatAmountWithFontSize(amount) {
+                const absAmount = Math.abs(amount);
+                let fontSize = '0.75rem'; // デフォルトサイズ
+                
+                // 7桁以上の場合、フォントサイズを小さくする
+                if (absAmount >= 1000000) {
+                    fontSize = '0.65rem';
+                }
+                
+                // 9桁以上の場合、さらに小さくする
+                if (absAmount >= 100000000) {
+                    fontSize = '0.55rem';
+                }
+                
+                const formattedAmount = absAmount.toLocaleString();
+                const sign = amount > 0 ? '+' : '-';
+                
+                return `<span style="font-size: ${fontSize}">${sign}${formattedAmount}</span>`;
             }
 
             async getTransactionsByDate(date) {
@@ -557,7 +551,8 @@
                     
                     let total = 0;
                     transactions.forEach(transaction => {
-                        total += parseInt(transaction.amount);
+                        // 回収金額 - 投資金額で計算
+                        total += (transaction.returnAmount - transaction.investmentAmount);
                     });
 
                     document.getElementById('total-amount').textContent = 
@@ -629,17 +624,10 @@
             async saveTransaction() {
                 const formData = {
                     date: document.getElementById('transaction-date').value,
-                    type: document.getElementById('transaction-type').value,
-                    amount: parseInt(document.getElementById('transaction-amount').value),
-                    category: document.getElementById('transaction-category').value,
+                    investmentAmount: parseInt(document.getElementById('investment-amount').value) || 0,
+                    returnAmount: parseInt(document.getElementById('return-amount').value) || 0,
                     description: document.getElementById('transaction-description').value
                 };
-
-                if (formData.type === 'expense') {
-                    formData.amount = -Math.abs(formData.amount);
-                } else {
-                    formData.amount = Math.abs(formData.amount);
-                }
 
                 return new Promise((resolve, reject) => {
                     const transaction = this.db.transaction(['transactions'], 'readwrite');
@@ -647,8 +635,8 @@
                     
                     const request = store.add({
                         date: formData.date,
-                        amount: formData.amount,
-                        category: formData.category,
+                        investmentAmount: formData.investmentAmount,
+                        returnAmount: formData.returnAmount,
                         description: formData.description,
                         createdAt: new Date().toISOString()
                     });
