@@ -86,7 +86,6 @@
             padding: 0;
         }
 
-        /* メインのカレンダーグリッド - 画面いっぱいに広げる */
         .calendar-main {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -99,7 +98,6 @@
             height: 100%;
         }
 
-        /* 曜日ヘッダー */
         .weekday {
             padding: 10px 5px;
             text-align: center;
@@ -114,7 +112,6 @@
             border-right: none;
         }
 
-        /* 日付セル */
         .day {
             padding: 5px;
             border-right: 1px solid #ecf0f1;
@@ -129,13 +126,16 @@
             min-height: 0;
         }
 
-        /* 選択中の日付 */
         .day.selected {
             background: #e3f2fd !important;
             border: 2px solid #2196f3;
         }
 
-        /* グリッドの最後の列と行のボーダーを削除 */
+        .day.has-error {
+            background: #ffebee !important;
+            border: 1px solid #f44336;
+        }
+
         .day:nth-child(7n) {
             border-right: none;
         }
@@ -175,7 +175,6 @@
             color: #3498db;
         }
 
-        /* 日計表示 - 金額に応じてフォントサイズ調整 */
         .daily-total {
             font-weight: bold;
             text-align: center;
@@ -198,7 +197,11 @@
             color: #7f8c8d;
         }
 
-        /* 日付詳細表示エリア */
+        .daily-total.error {
+            color: #f44336;
+            font-size: 0.7rem;
+        }
+
         .day-details {
             padding: 15px;
             background: #f8f9fa;
@@ -224,6 +227,12 @@
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ecf0f1;
+            position: relative;
+        }
+
+        .transaction-item.has-error {
+            border-color: #f44336;
+            background: #ffebee;
         }
 
         .transaction-amount {
@@ -239,10 +248,36 @@
             color: #e74c3c;
         }
 
+        .transaction-amount.error {
+            color: #f44336;
+        }
+
         .transaction-description {
             color: #7f8c8d;
             font-size: 0.9rem;
             margin-top: 5px;
+        }
+
+        .transaction-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #d32f2f;
         }
 
         .no-transactions {
@@ -250,6 +285,16 @@
             color: #7f8c8d;
             font-style: italic;
             padding: 20px;
+        }
+
+        .error-notice {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            color: #c62828;
+            font-size: 0.9rem;
         }
 
         .controls {
@@ -276,7 +321,6 @@
             background: #219a52;
         }
 
-        /* 月選択モーダル */
         .month-picker-modal {
             display: none;
             position: fixed;
@@ -382,33 +426,26 @@
             font-size: 0.9rem;
         }
 
-        /* レスポンシブ対応 */
         @media (max-width: 768px) {
             .header {
                 padding: 12px;
             }
-            
             .month-year {
                 font-size: 1.6rem;
             }
-            
             .total-amount {
                 font-size: 1.8rem;
             }
-            
             .weekday {
                 padding: 8px 3px;
                 font-size: 0.8rem;
             }
-            
             .day {
                 padding: 3px;
             }
-            
             .day-number {
                 font-size: 0.8rem;
             }
-            
             .daily-total {
                 font-size: 0.7rem;
             }
@@ -418,25 +455,20 @@
             .month-year {
                 font-size: 1.4rem;
             }
-            
             .total-amount {
                 font-size: 1.5rem;
             }
-            
             .weekday {
                 font-size: 0.75rem;
                 padding: 6px 2px;
             }
-            
             .day-number {
                 font-size: 0.75rem;
             }
-            
             .nav-btn, .add-btn {
                 padding: 6px 12px;
                 font-size: 0.8rem;
             }
-            
             .total-amount-container {
                 gap: 10px;
             }
@@ -456,7 +488,6 @@
 
         <div class="calendar">
             <div class="calendar-main" id="calendar-main">
-                <!-- 曜日ヘッダー -->
                 <div class="weekday">日</div>
                 <div class="weekday">月</div>
                 <div class="weekday">火</div>
@@ -464,32 +495,23 @@
                 <div class="weekday">木</div>
                 <div class="weekday">金</div>
                 <div class="weekday">土</div>
-                
-                <!-- 日付セルはJavaScriptで動的に追加 -->
             </div>
         </div>
 
-        <!-- 日付詳細表示エリア -->
-        <div class="day-details" id="day-details">
-            <!-- 選択された日の取引内容がここに表示される -->
-        </div>
+        <div class="day-details" id="day-details"></div>
 
         <div class="controls">
             <button class="add-btn" id="add-transaction">取引を追加</button>
+            <button class="nav-btn" id="cleanup-data" style="background: #f39c12; margin-left: 10px;">データ修復</button>
         </div>
     </div>
 
-    <!-- 月選択モーダル -->
     <div class="month-picker-modal" id="month-picker-modal">
         <div class="month-picker-content">
             <h3>月を選択</h3>
             <div class="month-picker">
-                <select id="year-select">
-                    <!-- 年オプションはJavaScriptで追加 -->
-                </select>
-                <select id="month-select">
-                    <!-- 月オプションはJavaScriptで追加 -->
-                </select>
+                <select id="year-select"></select>
+                <select id="month-select"></select>
             </div>
             <div class="month-picker-buttons">
                 <button class="cancel-btn" id="cancel-month-picker">キャンセル</button>
@@ -498,7 +520,6 @@
         </div>
     </div>
 
-    <!-- 取引追加モーダル -->
     <div class="modal" id="transaction-modal">
         <div class="modal-content">
             <h3>投資取引を追加</h3>
@@ -530,7 +551,7 @@
     <script>
         class FinanceCalendar {
             constructor() {
-                this.currentDate = new Date(2025, 10, 1); // 2025年11月
+                this.currentDate = new Date(2025, 10, 1);
                 this.selectedDate = null;
                 this.db = null;
                 this.init();
@@ -538,6 +559,7 @@
 
             async init() {
                 await this.initDB();
+                await this.cleanupErrorData();
                 this.renderCalendar();
                 this.setupEventListeners();
                 this.populateMonthPicker();
@@ -548,18 +570,13 @@
                     const request = indexedDB.open('FinanceCalendarDB', 1);
                     
                     request.onerror = () => reject(request.error);
-                    
                     request.onsuccess = () => {
                         this.db = request.result;
-                        // サンプルデータを追加
-                        this.addSampleData().then(() => {
-                            resolve();
-                        });
+                        this.addSampleData().then(() => resolve());
                     };
                     
                     request.onupgradeneeded = (event) => {
                         const db = event.target.result;
-                        
                         if (!db.objectStoreNames.contains('transactions')) {
                             const store = db.createObjectStore('transactions', {
                                 keyPath: 'id',
@@ -571,8 +588,65 @@
                 });
             }
 
+            async cleanupErrorData() {
+                try {
+                    const allTransactions = await this.getAllTransactions();
+                    let errorCount = 0;
+                    
+                    for (const transaction of allTransactions) {
+                        if (this.isErrorData(transaction)) {
+                            await this.deleteTransaction(transaction.id);
+                            errorCount++;
+                        }
+                    }
+                    
+                    if (errorCount > 0) {
+                        console.log(`${errorCount}件のエラーデータを削除しました`);
+                    }
+                    
+                } catch (error) {
+                    console.error('エラーデータのクリーンアップに失敗:', error);
+                }
+            }
+
+            isErrorData(transaction) {
+                if (!Number.isFinite(transaction.investmentAmount) || 
+                    !Number.isFinite(transaction.returnAmount)) {
+                    return true;
+                }
+                
+                if (transaction.investmentAmount < 0 || transaction.returnAmount < 0) {
+                    return true;
+                }
+                
+                if (!transaction.date || isNaN(new Date(transaction.date).getTime())) {
+                    return true;
+                }
+                
+                return false;
+            }
+
+            async getAllTransactions() {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['transactions'], 'readonly');
+                    const store = transaction.objectStore('transactions');
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async deleteTransaction(id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['transactions'], 'readwrite');
+                    const store = transaction.objectStore('transactions');
+                    const request = store.delete(id);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
             async addSampleData() {
-                // サンプルデータを追加
                 const sampleData = [
                     {
                         date: '2025-11-01',
@@ -619,11 +693,9 @@
 
             renderCalendar() {
                 const calendarMain = document.getElementById('calendar-main');
-                // 既存の日付セルをクリア（曜日ヘッダーは残す）
                 const weekdays = calendarMain.querySelectorAll('.weekday');
                 calendarMain.innerHTML = '';
                 
-                // 曜日ヘッダーを再追加
                 weekdays.forEach(weekday => {
                     calendarMain.appendChild(weekday.cloneNode(true));
                 });
@@ -636,17 +708,15 @@
 
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
-                const startDay = firstDay.getDay(); // 0=日曜日
+                const startDay = firstDay.getDay();
                 const totalDays = lastDay.getDate();
 
-                // 空白セルを追加（月初めの空白）
                 for (let i = 0; i < startDay; i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'day empty';
                     calendarMain.appendChild(emptyDay);
                 }
 
-                // 日付セルを追加
                 for (let date = 1; date <= totalDays; date++) {
                     const dayDiv = document.createElement('div');
                     const dayOfWeek = (startDay + date - 1) % 7;
@@ -655,7 +725,6 @@
                     if (dayOfWeek === 0) dayDiv.classList.add('sunday');
                     if (dayOfWeek === 6) dayDiv.classList.add('saturday');
                     
-                    // 選択中の日付の場合、クラスを追加
                     if (this.selectedDate && 
                         this.selectedDate.getFullYear() === year &&
                         this.selectedDate.getMonth() === month &&
@@ -663,17 +732,13 @@
                         dayDiv.classList.add('selected');
                     }
                     
-                    // 基本構造
-                    dayDiv.innerHTML = `
-                        <div class="day-number">${date}</div>
-                    `;
+                    dayDiv.innerHTML = `<div class="day-number">${date}</div>`;
                     dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
                     
                     this.renderDayTotal(dayDiv, year, month, date);
                     calendarMain.appendChild(dayDiv);
                 }
 
-                // 月末の空白セルを追加（合計42セルになるように）
                 const totalCells = startDay + totalDays;
                 const remainingCells = 42 - totalCells;
                 for (let i = 0; i < remainingCells; i++) {
@@ -691,20 +756,31 @@
                 try {
                     const transactions = await this.getTransactionsByDate(dateStr);
                     let dayTotal = 0;
+                    let hasError = false;
 
-                    transactions.forEach(transaction => {
-                        // 回収金額 - 投資金額で計算
+                    for (const transaction of transactions) {
+                        if (this.isErrorData(transaction)) {
+                            hasError = true;
+                            continue;
+                        }
                         dayTotal += (transaction.returnAmount - transaction.investmentAmount);
-                    });
+                    }
 
-                    // 日計を表示
-                    if (dayTotal !== 0) {
+                    if (hasError) {
+                        dayElement.classList.add('has-error');
+                    }
+
+                    if (dayTotal !== 0 || hasError) {
                         const totalEl = document.createElement('div');
-                        totalEl.className = `daily-total ${dayTotal > 0 ? 'income' : 'expense'}`;
                         
-                        // 金額に応じてフォントサイズを調整
-                        const formattedAmount = this.formatAmountWithFontSize(dayTotal);
-                        totalEl.innerHTML = formattedAmount;
+                        if (hasError) {
+                            totalEl.className = 'daily-total error';
+                            totalEl.textContent = 'データエラー';
+                        } else {
+                            totalEl.className = `daily-total ${dayTotal > 0 ? 'income' : 'expense'}`;
+                            const formattedAmount = this.formatAmountWithFontSize(dayTotal);
+                            totalEl.innerHTML = formattedAmount;
+                        }
                         
                         dayElement.appendChild(totalEl);
                     }
@@ -714,17 +790,14 @@
                 }
             }
 
-            // 金額に応じてフォントサイズを調整
             formatAmountWithFontSize(amount) {
                 const absAmount = Math.abs(amount);
-                let fontSize = '0.75rem'; // デフォルトサイズ
+                let fontSize = '0.75rem';
                 
-                // 7桁以上の場合、フォントサイズを小さくする
                 if (absAmount >= 1000000) {
                     fontSize = '0.65rem';
                 }
                 
-                // 9桁以上の場合、さらに小さくする
                 if (absAmount >= 100000000) {
                     fontSize = '0.55rem';
                 }
@@ -741,9 +814,7 @@
                     const store = transaction.objectStore('transactions');
                     const index = store.index('date');
                     const range = IDBKeyRange.only(date);
-                    
                     const request = index.getAll(range);
-                    
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 });
@@ -759,18 +830,30 @@
                     const transactions = await this.getTransactionsByRange(startDate, endDate);
                     
                     let total = 0;
-                    transactions.forEach(transaction => {
-                        // 回収金額 - 投資金額で計算
+                    let hasError = false;
+                    
+                    for (const transaction of transactions) {
+                        if (this.isErrorData(transaction)) {
+                            hasError = true;
+                            continue;
+                        }
                         total += (transaction.returnAmount - transaction.investmentAmount);
-                    });
+                    }
 
-                    // マイナスの場合は赤字で表示
                     const totalElement = document.getElementById('total-amount');
-                    totalElement.textContent = `¥${total.toLocaleString()}`;
-                    totalElement.style.color = total >= 0 ? '#27ae60' : '#e74c3c';
+                    if (hasError) {
+                        totalElement.textContent = 'データエラー';
+                        totalElement.style.color = '#f44336';
+                    } else {
+                        totalElement.textContent = `¥${total.toLocaleString()}`;
+                        totalElement.style.color = total >= 0 ? '#27ae60' : '#e74c3c';
+                    }
 
                 } catch (error) {
                     console.error('合計金額の更新に失敗:', error);
+                    const totalElement = document.getElementById('total-amount');
+                    totalElement.textContent = '計算エラー';
+                    totalElement.style.color = '#f44336';
                 }
             }
 
@@ -780,22 +863,21 @@
                     const store = transaction.objectStore('transactions');
                     const index = store.index('date');
                     const range = IDBKeyRange.bound(startDate, endDate);
-                    
                     const request = index.getAll(range);
-                    
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 });
             }
 
-            // 日付詳細を表示
             async showDayDetails(dateStr) {
                 const dayDetails = document.getElementById('day-details');
                 
                 try {
                     const transactions = await this.getTransactionsByDate(dateStr);
+                    const validTransactions = transactions.filter(t => !this.isErrorData(t));
+                    const errorTransactions = transactions.filter(t => this.isErrorData(t));
                     
-                    if (transactions.length === 0) {
+                    if (validTransactions.length === 0 && errorTransactions.length === 0) {
                         dayDetails.innerHTML = `
                             <h3>${dateStr.replace(/-/g, '/')}</h3>
                             <div class="no-transactions">取引がありません</div>
@@ -804,15 +886,28 @@
                     }
                     
                     let html = `<h3>${dateStr.replace(/-/g, '/')}</h3>`;
+                    
+                    if (errorTransactions.length > 0) {
+                        html += `
+                            <div class="error-notice">
+                                ${errorTransactions.length}件のエラーデータがあります。
+                                <button class="delete-btn" onclick="financeApp.cleanupDayData('${dateStr}')">修復</button>
+                            </div>
+                        `;
+                    }
+                    
                     html += '<div class="transaction-list">';
                     
-                    transactions.forEach(transaction => {
+                    validTransactions.forEach(transaction => {
                         const amount = transaction.returnAmount - transaction.investmentAmount;
                         const amountClass = amount >= 0 ? 'positive' : 'negative';
                         const amountSign = amount >= 0 ? '+' : '';
                         
                         html += `
                             <div class="transaction-item">
+                                <div class="transaction-actions">
+                                    <button class="delete-btn" onclick="financeApp.deleteTransactionAndRefresh(${transaction.id})">削除</button>
+                                </div>
                                 <div class="transaction-amount ${amountClass}">
                                     ${amountSign}¥${amount.toLocaleString()}
                                 </div>
@@ -822,6 +917,26 @@
                                 <div class="transaction-details">
                                     投資: ¥${transaction.investmentAmount.toLocaleString()} | 
                                     回収: ¥${transaction.returnAmount.toLocaleString()}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    errorTransactions.forEach(transaction => {
+                        html += `
+                            <div class="transaction-item has-error">
+                                <div class="transaction-actions">
+                                    <button class="delete-btn" onclick="financeApp.deleteTransactionAndRefresh(${transaction.id})">削除</button>
+                                </div>
+                                <div class="transaction-amount error">
+                                    データエラー
+                                </div>
+                                <div class="transaction-description">
+                                    ${transaction.description || '説明なし'}
+                                </div>
+                                <div class="transaction-details">
+                                    投資: ${transaction.investmentAmount} | 
+                                    回収: ${transaction.returnAmount}
                                 </div>
                             </div>
                         `;
@@ -839,12 +954,51 @@
                 }
             }
 
-            // 月選択ピッカーを設定
+            async cleanupDayData(dateStr) {
+                try {
+                    const transactions = await this.getTransactionsByDate(dateStr);
+                    let deletedCount = 0;
+                    
+                    for (const transaction of transactions) {
+                        if (this.isErrorData(transaction)) {
+                            await this.deleteTransaction(transaction.id);
+                            deletedCount++;
+                        }
+                    }
+                    
+                    if (deletedCount > 0) {
+                        alert(`${deletedCount}件のエラーデータを削除しました`);
+                        this.renderCalendar();
+                        this.showDayDetails(dateStr);
+                    }
+                    
+                } catch (error) {
+                    console.error('エラーデータの削除に失敗:', error);
+                    alert('エラーデータの削除に失敗しました');
+                }
+            }
+
+            async deleteTransactionAndRefresh(id) {
+                if (confirm('この取引を削除しますか？')) {
+                    try {
+                        await this.deleteTransaction(id);
+                        this.renderCalendar();
+                        
+                        if (this.selectedDate) {
+                            const dateStr = this.selectedDate.toISOString().split('T')[0];
+                            this.showDayDetails(dateStr);
+                        }
+                    } catch (error) {
+                        console.error('取引の削除に失敗:', error);
+                        alert('取引の削除に失敗しました');
+                    }
+                }
+            }
+
             populateMonthPicker() {
                 const yearSelect = document.getElementById('year-select');
                 const monthSelect = document.getElementById('month-select');
                 
-                // 年の選択肢を追加 (2020-2030)
                 for (let year = 2020; year <= 2030; year++) {
                     const option = document.createElement('option');
                     option.value = year;
@@ -855,7 +1009,6 @@
                     yearSelect.appendChild(option);
                 }
                 
-                // 月の選択肢を追加
                 for (let month = 0; month < 12; month++) {
                     const option = document.createElement('option');
                     option.value = month;
@@ -868,7 +1021,6 @@
             }
 
             setupEventListeners() {
-                // 月選択モーダル
                 const monthPickerModal = document.getElementById('month-picker-modal');
                 document.getElementById('current-month').addEventListener('click', () => {
                     monthPickerModal.style.display = 'flex';
@@ -889,7 +1041,6 @@
                     monthPickerModal.style.display = 'none';
                 });
 
-                // 月ナビゲーション
                 document.getElementById('prev-month').addEventListener('click', () => {
                     this.currentDate.setMonth(this.currentDate.getMonth() - 1);
                     this.selectedDate = null;
@@ -904,7 +1055,18 @@
                     document.getElementById('day-details').innerHTML = '';
                 });
 
-                // 取引モーダル
+                document.getElementById('cleanup-data').addEventListener('click', async () => {
+                    if (confirm('全データをスキャンしてエラーデータを修復しますか？')) {
+                        await this.cleanupErrorData();
+                        this.renderCalendar();
+                        if (this.selectedDate) {
+                            const dateStr = this.selectedDate.toISOString().split('T')[0];
+                            this.showDayDetails(dateStr);
+                        }
+                        alert('データ修復が完了しました');
+                    }
+                });
+
                 const modal = document.getElementById('transaction-modal');
                 const addBtn = document.getElementById('add-transaction');
                 const cancelBtn = document.getElementById('cancel-btn');
@@ -923,34 +1085,42 @@
 
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
+                    const investmentAmount = parseInt(document.getElementById('investment-amount').value) || 0;
+                    const returnAmount = parseInt(document.getElementById('return-amount').value) || 0;
+                    
+                    if (!Number.isFinite(investmentAmount) || investmentAmount < 0) {
+                        alert('投資金額は0以上の数値を入力してください');
+                        return;
+                    }
+                    
+                    if (!Number.isFinite(returnAmount) || returnAmount < 0) {
+                        alert('回収金額は0以上の数値を入力してください');
+                        return;
+                    }
+
                     await this.saveTransaction();
                     modal.style.display = 'none';
                     form.reset();
                     this.renderCalendar();
                     
-                    // 選択中の日付がある場合は詳細を更新
                     if (this.selectedDate) {
                         const dateStr = this.selectedDate.toISOString().split('T')[0];
                         this.showDayDetails(dateStr);
                     }
                 });
 
-                // 日付クリック処理
                 document.getElementById('calendar-main').addEventListener('click', async (e) => {
                     const dayElement = e.target.closest('.day');
                     if (dayElement && dayElement.dataset.date && !dayElement.classList.contains('empty')) {
                         const dateStr = dayElement.dataset.date;
                         
-                        // 同じ日付をクリックした場合
                         if (this.selectedDate && 
                             this.selectedDate.toISOString().split('T')[0] === dateStr) {
-                            // 取引追加モーダルを表示
                             document.getElementById('transaction-date').value = dateStr;
                             modal.style.display = 'flex';
                         } else {
-                            // 日付を選択状態にして詳細を表示
                             this.selectedDate = new Date(dateStr);
-                            this.renderCalendar(); // 選択状態を反映するために再描画
+                            this.renderCalendar();
                             this.showDayDetails(dateStr);
                         }
                     }
@@ -983,7 +1153,6 @@
             }
         }
 
-        // アプリケーションの起動
         document.addEventListener('DOMContentLoaded', async () => {
             window.financeApp = new FinanceCalendar();
         });
