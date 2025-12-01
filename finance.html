@@ -50,17 +50,25 @@
             padding: 20px;
         }
 
-        .weekdays {
+        /* 曜日ヘッダーと日付のグリッドを完全に一致させる */
+        .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            background: #34495e;
-            color: white;
-            font-weight: bold;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .weekdays {
+            display: contents; /* グリッドコンテナの子要素として直接配置 */
         }
 
         .weekday {
             padding: 15px;
             text-align: center;
+            background: #34495e;
+            color: white;
+            font-weight: bold;
             border-right: 1px solid #2c3e50;
         }
 
@@ -69,17 +77,28 @@
         }
 
         .week {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            display: contents; /* グリッドコンテナの子要素として直接配置 */
         }
 
         .day {
             min-height: 120px;
             padding: 10px;
-            border: 1px solid #ecf0f1;
+            border-right: 1px solid #ecf0f1;
+            border-bottom: 1px solid #ecf0f1;
             position: relative;
             cursor: pointer;
             transition: background-color 0.2s;
+            background: white;
+        }
+
+        /* 最後の列の右ボーダーを削除 */
+        .day:nth-child(7n) {
+            border-right: none;
+        }
+
+        /* 最後の行の下ボーダーを削除 */
+        .week:last-child .day {
+            border-bottom: none;
         }
 
         .day:hover {
@@ -257,7 +276,9 @@
         </div>
 
         <div class="calendar">
-            <div class="weekdays">
+            <!-- 単一のグリッドコンテナで統一 -->
+            <div class="calendar-grid">
+                <!-- 曜日ヘッダー -->
                 <div class="weekday">日</div>
                 <div class="weekday">月</div>
                 <div class="weekday">火</div>
@@ -265,8 +286,10 @@
                 <div class="weekday">木</div>
                 <div class="weekday">金</div>
                 <div class="weekday">土</div>
+                
+                <!-- 日付セル（ここに動的に追加） -->
+                <div id="calendar-cells"></div>
             </div>
-            <div id="calendar-grid"></div>
         </div>
 
         <div class="controls">
@@ -359,8 +382,8 @@
             }
 
             renderCalendar() {
-                const calendarGrid = document.getElementById('calendar-grid');
-                calendarGrid.innerHTML = '';
+                const calendarCells = document.getElementById('calendar-cells');
+                calendarCells.innerHTML = '';
 
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth();
@@ -371,31 +394,17 @@
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
                 const startDay = firstDay.getDay(); // 0=日曜日
-
-                let currentDate = 1;
                 const totalDays = lastDay.getDate();
 
-                // カレンダーグリッドを作成
-                let currentWeek = document.createElement('div');
-                currentWeek.className = 'week';
-                calendarGrid.appendChild(currentWeek);
-
-                // 最初の週の空白セルを追加
+                // 空白セルを追加（月初めの空白）
                 for (let i = 0; i < startDay; i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'day empty';
-                    currentWeek.appendChild(emptyDay);
+                    calendarCells.appendChild(emptyDay);
                 }
 
                 // 日付セルを追加
                 for (let date = 1; date <= totalDays; date++) {
-                    // 日曜日で新しい週を開始
-                    if ((startDay + date - 1) % 7 === 0 && date > 1) {
-                        currentWeek = document.createElement('div');
-                        currentWeek.className = 'week';
-                        calendarGrid.appendChild(currentWeek);
-                    }
-
                     const dayDiv = document.createElement('div');
                     const dayOfWeek = (startDay + date - 1) % 7;
                     
@@ -407,7 +416,16 @@
                     dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
                     
                     this.renderDayTransactions(dayDiv, year, month, date);
-                    currentWeek.appendChild(dayDiv);
+                    calendarCells.appendChild(dayDiv);
+                }
+
+                // 月末の空白セルを追加（合計42セルになるように）
+                const totalCells = startDay + totalDays;
+                const remainingCells = 42 - totalCells; // 6週間分
+                for (let i = 0; i < remainingCells; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'day empty';
+                    calendarCells.appendChild(emptyDay);
                 }
 
                 this.updateTotalAmount();
@@ -535,9 +553,9 @@
                     this.renderCalendar();
                 });
 
-                document.getElementById('calendar-grid').addEventListener('click', (e) => {
+                document.getElementById('calendar-cells').addEventListener('click', (e) => {
                     const dayElement = e.target.closest('.day');
-                    if (dayElement && dayElement.dataset.date) {
+                    if (dayElement && dayElement.dataset.date && !dayElement.classList.contains('empty')) {
                         document.getElementById('transaction-date').value = dayElement.dataset.date;
                         modal.style.display = 'flex';
                     }
