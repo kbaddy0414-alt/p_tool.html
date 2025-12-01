@@ -252,7 +252,7 @@
             color: #f44336;
         }
 
-        .transaction-description {
+        .transaction-details {
             color: #7f8c8d;
             font-size: 0.9rem;
             margin-top: 5px;
@@ -377,7 +377,7 @@
             padding: 25px;
             border-radius: 10px;
             width: 90%;
-            max-width: 450px;
+            max-width: 400px;
         }
 
         .form-group {
@@ -481,7 +481,7 @@
             <div class="month-year" id="current-month">2025年11月</div>
             <div class="total-amount-container">
                 <button class="nav-btn" id="prev-month">前月</button>
-                <div class="total-amount" id="total-amount">¥20,705,077</div>
+                <div class="total-amount" id="total-amount">¥0</div>
                 <button class="nav-btn" id="next-month">次月</button>
             </div>
         </div>
@@ -536,10 +536,6 @@
                     <label for="return-amount">回収金額</label>
                     <input type="number" id="return-amount" required>
                 </div>
-                <div class="form-group">
-                    <label for="transaction-description">説明</label>
-                    <input type="text" id="transaction-description">
-                </div>
                 <div class="form-buttons">
                     <button type="button" class="cancel-btn" id="cancel-btn">キャンセル</button>
                     <button type="submit" class="save-btn">保存</button>
@@ -551,15 +547,16 @@
     <script>
         class FinanceCalendar {
             constructor() {
-                this.currentDate = new Date(2025, 10, 1);
+                this.currentDate = new Date();
+                this.currentDate.setDate(1); // 月の最初の日に設定
                 this.selectedDate = null;
                 this.db = null;
+                this.isInitialized = false;
                 this.init();
             }
 
             async init() {
                 await this.initDB();
-                await this.cleanupErrorData();
                 this.renderCalendar();
                 this.setupEventListeners();
                 this.populateMonthPicker();
@@ -567,24 +564,73 @@
 
             async initDB() {
                 return new Promise((resolve, reject) => {
-                    const request = indexedDB.open('FinanceCalendarDB', 1);
+                    const request = indexedDB.open('FinanceCalendarDB', 2); // バージョンを上げる
                     
                     request.onerror = () => reject(request.error);
                     request.onsuccess = () => {
                         this.db = request.result;
-                        this.addSampleData().then(() => resolve());
+                        // 初回のみサンプルデータを追加
+                        this.checkAndAddSampleData().then(() => resolve());
                     };
                     
                     request.onupgradeneeded = (event) => {
                         const db = event.target.result;
-                        if (!db.objectStoreNames.contains('transactions')) {
-                            const store = db.createObjectStore('transactions', {
-                                keyPath: 'id',
-                                autoIncrement: true
-                            });
-                            store.createIndex('date', 'date', { unique: false });
+                        const oldVersion = event.oldVersion;
+                        
+                        if (oldVersion < 1) {
+                            // 初回作成時
+                            if (!db.objectStoreNames.contains('transactions')) {
+                                const store = db.createObjectStore('transactions', {
+                                    keyPath: 'id',
+                                    autoIncrement: true
+                                });
+                                store.createIndex('date', 'date', { unique: false });
+                            }
+                        }
+                        
+                        if (oldVersion < 2) {
+                            // バージョン2: initializedフラグ用のストアを追加
+                            if (!db.objectStoreNames.contains('appState')) {
+                                const store = db.createObjectStore('appState', {
+                                    keyPath: 'key'
+                                });
+                            }
                         }
                     };
+                });
+            }
+
+            async checkAndAddSampleData() {
+                // すでに初期化済みかチェック
+                const isInitialized = await this.getAppState('initialized');
+                
+                if (!isInitialized) {
+                    // 初回のみサンプルデータを追加
+                    await this.addSampleData();
+                    await this.setAppState('initialized', true);
+                    console.log('サンプルデータを追加しました');
+                } else {
+                    console.log('既に初期化済みです');
+                }
+            }
+
+            async getAppState(key) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['appState'], 'readonly');
+                    const store = transaction.objectStore('appState');
+                    const request = store.get(key);
+                    request.onsuccess = () => resolve(request.result ? request.result.value : false);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async setAppState(key, value) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['appState'], 'readwrite');
+                    const store = transaction.objectStore('appState');
+                    const request = store.put({ key, value });
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
                 });
             }
 
@@ -651,20 +697,17 @@
                     {
                         date: '2025-11-01',
                         investmentAmount: 505000,
-                        returnAmount: 0,
-                        description: 'サンプル投資1'
+                        returnAmount: 0
                     },
                     {
                         date: '2025-11-02',
                         investmentAmount: 20000077,
-                        returnAmount: 0,
-                        description: 'サンプル投資2'
+                        returnAmount: 0
                     },
                     {
                         date: '2025-11-03',
                         investmentAmount: 200000,
-                        returnAmount: 0,
-                        description: 'サンプル投資3'
+                        returnAmount: 0
                     }
                 ];
 
@@ -682,7 +725,6 @@
                         date: formData.date,
                         investmentAmount: formData.investmentAmount,
                         returnAmount: formData.returnAmount,
-                        description: formData.description,
                         createdAt: new Date().toISOString()
                     });
 
@@ -911,9 +953,6 @@
                                 <div class="transaction-amount ${amountClass}">
                                     ${amountSign}¥${amount.toLocaleString()}
                                 </div>
-                                <div class="transaction-description">
-                                    ${transaction.description || '説明なし'}
-                                </div>
                                 <div class="transaction-details">
                                     投資: ¥${transaction.investmentAmount.toLocaleString()} | 
                                     回収: ¥${transaction.returnAmount.toLocaleString()}
@@ -930,9 +969,6 @@
                                 </div>
                                 <div class="transaction-amount error">
                                     データエラー
-                                </div>
-                                <div class="transaction-description">
-                                    ${transaction.description || '説明なし'}
                                 </div>
                                 <div class="transaction-details">
                                     投資: ${transaction.investmentAmount} | 
@@ -999,11 +1035,13 @@
                 const yearSelect = document.getElementById('year-select');
                 const monthSelect = document.getElementById('month-select');
                 
-                for (let year = 2020; year <= 2030; year++) {
+                const currentYear = this.currentDate.getFullYear();
+                
+                for (let year = currentYear - 5; year <= currentYear + 5; year++) {
                     const option = document.createElement('option');
                     option.value = year;
                     option.textContent = `${year}年`;
-                    if (year === this.currentDate.getFullYear()) {
+                    if (year === currentYear) {
                         option.selected = true;
                     }
                     yearSelect.appendChild(option);
@@ -1131,8 +1169,7 @@
                 const formData = {
                     date: document.getElementById('transaction-date').value,
                     investmentAmount: parseInt(document.getElementById('investment-amount').value) || 0,
-                    returnAmount: parseInt(document.getElementById('return-amount').value) || 0,
-                    description: document.getElementById('transaction-description').value
+                    returnAmount: parseInt(document.getElementById('return-amount').value) || 0
                 };
 
                 return new Promise((resolve, reject) => {
@@ -1143,7 +1180,6 @@
                         date: formData.date,
                         investmentAmount: formData.investmentAmount,
                         returnAmount: formData.returnAmount,
-                        description: formData.description,
                         createdAt: new Date().toISOString()
                     });
 
