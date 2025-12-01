@@ -24,8 +24,14 @@
             background: white;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
         }
 
+        .container.menu-open {
+            transform: translateX(-250px);
+        }
+
+        /* ヘッダー */
         .header {
             background: #2c3e50;
             color: white;
@@ -33,6 +39,19 @@
             text-align: center;
             flex-shrink: 0;
             position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
         }
 
         .month-year {
@@ -78,6 +97,88 @@
             background: #2980b9;
         }
 
+        /* サイドメニュー - 右側に変更 */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -250px;
+            width: 250px;
+            height: 100vh;
+            background: #2c3e50;
+            color: white;
+            transition: right 0.3s ease;
+            z-index: 1001;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+        }
+
+        .side-menu.open {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 20px;
+            background: #34495e;
+            border-bottom: 1px solid #4a6572;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .close-menu:hover {
+            color: #ecf0f1;
+        }
+
+        .menu-items {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 15px 20px;
+            color: #ecf0f1;
+            text-decoration: none;
+            border-bottom: 1px solid #34495e;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .menu-item:hover {
+            background: #34495e;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-toggle {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* カレンダー */
         .calendar {
             flex: 1;
             display: flex;
@@ -202,6 +303,7 @@
             font-size: 0.7rem;
         }
 
+        /* 詳細表示 */
         .day-details {
             padding: 15px;
             background: #f8f9fa;
@@ -224,10 +326,11 @@
 
         .transaction-item {
             background: white;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 8px;
             border: 1px solid #ecf0f1;
             position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .transaction-item.has-error {
@@ -237,7 +340,8 @@
 
         .transaction-amount {
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
         }
 
         .transaction-amount.positive {
@@ -254,30 +358,71 @@
 
         .transaction-details {
             color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-top: 5px;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .transaction-machine {
+            color: #3498db;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .transaction-shop {
+            color: #9b59b6;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
         }
 
         .transaction-actions {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 15px;
+            right: 15px;
             display: flex;
-            gap: 5px;
+            gap: 8px;
+        }
+
+        /* 編集ボタンと削除ボタンを大きく改善 */
+        .edit-btn, .delete-btn {
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            min-width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-btn {
+            background: #3498db;
+        }
+
+        .edit-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
         .delete-btn {
             background: #f44336;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 2px 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
         }
 
         .delete-btn:hover {
             background: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .edit-btn:active, .delete-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .no-transactions {
@@ -285,18 +430,20 @@
             color: #7f8c8d;
             font-style: italic;
             padding: 20px;
+            font-size: 1.1rem;
         }
 
         .error-notice {
             background: #ffebee;
             border: 1px solid #f44336;
             border-radius: 5px;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             color: #c62828;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
+        /* コントロール */
         .controls {
             display: flex;
             justify-content: center;
@@ -307,13 +454,14 @@
         }
 
         .add-btn {
-            padding: 8px 16px;
+            padding: 12px 20px;
             background: #27ae60;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            font-weight: bold;
             transition: background-color 0.2s;
         }
 
@@ -321,7 +469,8 @@
             background: #219a52;
         }
 
-        .month-picker-modal {
+        /* モーダル */
+        .month-picker-modal, .stats-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -334,18 +483,20 @@
             z-index: 1000;
         }
 
-        .month-picker-content {
+        .month-picker-content, .stats-content {
             background: white;
             padding: 25px;
             border-radius: 10px;
             width: 90%;
-            max-width: 300px;
+            max-width: 500px;
             text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .month-picker select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             border: 1px solid #bdc3c7;
             border-radius: 5px;
@@ -377,53 +528,126 @@
             padding: 25px;
             border-radius: 10px;
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         .form-group input, .form-group select {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #bdc3c7;
             border-radius: 5px;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         .form-buttons {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             justify-content: flex-end;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .save-btn {
-            padding: 8px 16px;
+            padding: 12px 20px;
             background: #27ae60;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            font-weight: bold;
         }
 
         .cancel-btn {
-            padding: 8px 16px;
+            padding: 12px 20px;
             background: #95a5a6;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /* 統計表示 */
+        .stats-section {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .stats-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        .year-stats, .shop-stats, .machine-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .year-stat-item, .shop-stat-item, .machine-stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .year-stat-year, .shop-stat-name, .machine-stat-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .year-stat-amount, .shop-stat-amount, .machine-stat-amount {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .year-stat-amount.positive, .shop-stat-amount.positive, .machine-stat-amount.positive {
+            color: #27ae60;
+        }
+
+        .year-stat-amount.negative, .shop-stat-amount.negative, .machine-stat-amount.negative {
+            color: #e74c3c;
+        }
+
+        .lifetime-stats {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .lifetime-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .lifetime-amount.positive {
+            color: #27ae60;
+        }
+
+        .lifetime-amount.negative {
+            color: #e74c3c;
         }
 
         @media (max-width: 768px) {
@@ -449,6 +673,31 @@
             .daily-total {
                 font-size: 0.7rem;
             }
+            .year-stats, .shop-stats, .machine-stats {
+                grid-template-columns: 1fr;
+            }
+            .side-menu {
+                width: 280px;
+                right: -280px;
+            }
+            .container.menu-open {
+                transform: translateX(-280px);
+            }
+            
+            /* モバイル用にボタンを調整 */
+            .edit-btn, .delete-btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+                min-width: 60px;
+            }
+            
+            .transaction-item {
+                padding: 12px;
+            }
+            
+            .transaction-amount {
+                font-size: 1.1rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -466,23 +715,66 @@
                 font-size: 0.75rem;
             }
             .nav-btn, .add-btn {
-                padding: 6px 12px;
-                font-size: 0.8rem;
+                padding: 8px 14px;
+                font-size: 0.9rem;
             }
             .total-amount-container {
                 gap: 10px;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            /* さらに小さい画面用に調整 */
+            .edit-btn, .delete-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+                min-width: 50px;
+            }
+            
+            .transaction-actions {
+                top: 10px;
+                right: 10px;
+                gap: 5px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- サイドメニュー - 右側に変更 -->
+    <div class="side-menu" id="side-menu">
+        <div class="menu-header">
+            <div class="menu-title">メニュー</div>
+            <button class="close-menu" id="close-menu">×</button>
+        </div>
+        <div class="menu-items">
+            <div class="menu-item" id="go-to-top">トップページへ</div>
+            <div class="menu-item" id="show-yearly-stats">年次別収支</div>
+            <div class="menu-item" id="show-lifetime-stats">生涯通算収支</div>
+            <div class="menu-item" id="show-shop-stats">店舗別収支</div>
+            <div class="menu-item" id="show-machine-stats">機種別収支</div>
+            <div class="menu-item" id="show-current-month">当月表示</div>
+        </div>
+    </div>
+
+    <div class="container" id="main-container">
         <div class="header">
-            <div class="month-year" id="current-month">2025年11月</div>
-            <div class="total-amount-container">
-                <button class="nav-btn" id="prev-month">前月</button>
-                <div class="total-amount" id="total-amount">¥0</div>
-                <button class="nav-btn" id="next-month">次月</button>
+            <div class="header-content">
+                <div style="width: 80px;"></div> <!-- 左側のスペーサー -->
+                
+                <div class="header-title">
+                    <div class="month-year" id="current-month">2025年11月</div>
+                    <div class="total-amount-container">
+                        <button class="nav-btn" id="prev-month">前月</button>
+                        <div class="total-amount" id="total-amount">¥0</div>
+                        <button class="nav-btn" id="next-month">次月</button>
+                    </div>
+                </div>
+                
+                <button class="menu-toggle" id="menu-toggle">
+                    ☰ メニュー
+                </button>
             </div>
         </div>
 
@@ -495,10 +787,13 @@
                 <div class="weekday">木</div>
                 <div class="weekday">金</div>
                 <div class="weekday">土</div>
+                <!-- 日付はJavaScriptで動的に追加されます -->
             </div>
         </div>
 
-        <div class="day-details" id="day-details"></div>
+        <div class="day-details" id="day-details">
+            <!-- 日別詳細はJavaScriptで動的に追加されます -->
+        </div>
 
         <div class="controls">
             <button class="add-btn" id="add-transaction">取引を追加</button>
@@ -506,6 +801,7 @@
         </div>
     </div>
 
+    <!-- 月選択モーダル -->
     <div class="month-picker-modal" id="month-picker-modal">
         <div class="month-picker-content">
             <h3>月を選択</h3>
@@ -520,533 +816,373 @@
         </div>
     </div>
 
+    <!-- 統計表示モーダル -->
+    <div class="stats-modal" id="stats-modal">
+        <div class="stats-content">
+            <h3 id="stats-title">統計情報</h3>
+            <div id="stats-content">
+                <!-- 統計内容がここに表示されます -->
+            </div>
+            <div class="form-buttons">
+                <button class="cancel-btn" id="close-stats">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 取引追加・編集モーダル -->
     <div class="modal" id="transaction-modal">
         <div class="modal-content">
-            <h3>投資取引を追加</h3>
+            <h3 id="transaction-modal-title">投資取引を追加</h3>
             <form id="transaction-form">
+                <input type="hidden" id="edit-transaction-id">
                 <div class="form-group">
                     <label for="transaction-date">日付</label>
                     <input type="date" id="transaction-date" required>
                 </div>
                 <div class="form-group">
                     <label for="investment-amount">投資金額</label>
-                    <input type="number" id="investment-amount" required>
+                    <input type="number" id="investment-amount" placeholder="0" min="0">
                 </div>
                 <div class="form-group">
                     <label for="return-amount">回収金額</label>
-                    <input type="number" id="return-amount" required>
+                    <input type="number" id="return-amount" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="machine-name">機種名</label>
+                    <input type="text" id="machine-name" placeholder="例: 北斗の拳">
+                </div>
+                <div class="form-group">
+                    <label for="shop-name">店舗名</label>
+                    <input type="text" id="shop-name" placeholder="例: パチンコ〇〇店">
                 </div>
                 <div class="form-buttons">
                     <button type="button" class="cancel-btn" id="cancel-btn">キャンセル</button>
-                    <button type="submit" class="save-btn">保存</button>
+                    <button type="submit" class="save-btn" id="save-transaction-btn">保存</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
+        // シンプルなFinanceCalendarクラス
         class FinanceCalendar {
             constructor() {
                 this.currentDate = new Date();
                 this.currentDate.setDate(1); // 月の最初の日に設定
                 this.selectedDate = null;
-                this.db = null;
-                this.isInitialized = false;
+                this.transactions = JSON.parse(localStorage.getItem('financeTransactions')) || [];
+                this.editingTransactionId = null;
                 this.init();
             }
 
-            async init() {
-                await this.initDB();
+            init() {
                 this.renderCalendar();
                 this.setupEventListeners();
                 this.populateMonthPicker();
+                console.log('FinanceCalendar initialized');
             }
 
-            async initDB() {
-                return new Promise((resolve, reject) => {
-                    const request = indexedDB.open('FinanceCalendarDB', 2); // バージョンを上げる
-                    
-                    request.onerror = () => reject(request.error);
-                    request.onsuccess = () => {
-                        this.db = request.result;
-                        // 初回のみサンプルデータを追加
-                        this.checkAndAddSampleData().then(() => resolve());
-                    };
-                    
-                    request.onupgradeneeded = (event) => {
-                        const db = event.target.result;
-                        const oldVersion = event.oldVersion;
-                        
-                        if (oldVersion < 1) {
-                            // 初回作成時
-                            if (!db.objectStoreNames.contains('transactions')) {
-                                const store = db.createObjectStore('transactions', {
-                                    keyPath: 'id',
-                                    autoIncrement: true
-                                });
-                                store.createIndex('date', 'date', { unique: false });
-                            }
-                        }
-                        
-                        if (oldVersion < 2) {
-                            // バージョン2: initializedフラグ用のストアを追加
-                            if (!db.objectStoreNames.contains('appState')) {
-                                const store = db.createObjectStore('appState', {
-                                    keyPath: 'key'
-                                });
-                            }
-                        }
-                    };
-                });
+            // メニュー操作
+            openMenu() {
+                document.getElementById('side-menu').classList.add('open');
+                document.getElementById('main-container').classList.add('menu-open');
             }
 
-            async checkAndAddSampleData() {
-                // すでに初期化済みかチェック
-                const isInitialized = await this.getAppState('initialized');
-                
-                if (!isInitialized) {
-                    // 初回のみサンプルデータを追加
-                    await this.addSampleData();
-                    await this.setAppState('initialized', true);
-                    console.log('サンプルデータを追加しました');
-                } else {
-                    console.log('既に初期化済みです');
-                }
+            closeMenu() {
+                document.getElementById('side-menu').classList.remove('open');
+                document.getElementById('main-container').classList.remove('menu-open');
             }
 
-            async getAppState(key) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['appState'], 'readonly');
-                    const store = transaction.objectStore('appState');
-                    const request = store.get(key);
-                    request.onsuccess = () => resolve(request.result ? request.result.value : false);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
-            async setAppState(key, value) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['appState'], 'readwrite');
-                    const store = transaction.objectStore('appState');
-                    const request = store.put({ key, value });
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
-            async cleanupErrorData() {
-                try {
-                    const allTransactions = await this.getAllTransactions();
-                    let errorCount = 0;
-                    
-                    for (const transaction of allTransactions) {
-                        if (this.isErrorData(transaction)) {
-                            await this.deleteTransaction(transaction.id);
-                            errorCount++;
-                        }
-                    }
-                    
-                    if (errorCount > 0) {
-                        console.log(`${errorCount}件のエラーデータを削除しました`);
-                    }
-                    
-                } catch (error) {
-                    console.error('エラーデータのクリーンアップに失敗:', error);
-                }
-            }
-
-            isErrorData(transaction) {
-                if (!Number.isFinite(transaction.investmentAmount) || 
-                    !Number.isFinite(transaction.returnAmount)) {
-                    return true;
-                }
-                
-                if (transaction.investmentAmount < 0 || transaction.returnAmount < 0) {
-                    return true;
-                }
-                
-                if (!transaction.date || isNaN(new Date(transaction.date).getTime())) {
-                    return true;
-                }
-                
-                return false;
-            }
-
-            async getAllTransactions() {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['transactions'], 'readonly');
-                    const store = transaction.objectStore('transactions');
-                    const request = store.getAll();
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
-            async deleteTransaction(id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['transactions'], 'readwrite');
-                    const store = transaction.objectStore('transactions');
-                    const request = store.delete(id);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
-            async addSampleData() {
-                const sampleData = [
-                    {
-                        date: '2025-11-01',
-                        investmentAmount: 505000,
-                        returnAmount: 0
-                    },
-                    {
-                        date: '2025-11-02',
-                        investmentAmount: 20000077,
-                        returnAmount: 0
-                    },
-                    {
-                        date: '2025-11-03',
-                        investmentAmount: 200000,
-                        returnAmount: 0
-                    }
-                ];
-
-                for (const data of sampleData) {
-                    await this.saveTransactionData(data);
-                }
-            }
-
-            async saveTransactionData(formData) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['transactions'], 'readwrite');
-                    const store = transaction.objectStore('transactions');
-                    
-                    const request = store.add({
-                        date: formData.date,
-                        investmentAmount: formData.investmentAmount,
-                        returnAmount: formData.returnAmount,
-                        createdAt: new Date().toISOString()
-                    });
-
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
+            // カレンダー表示
             renderCalendar() {
                 const calendarMain = document.getElementById('calendar-main');
-                const weekdays = calendarMain.querySelectorAll('.weekday');
-                calendarMain.innerHTML = '';
+                const currentMonthElement = document.getElementById('current-month');
                 
-                weekdays.forEach(weekday => {
-                    calendarMain.appendChild(weekday.cloneNode(true));
-                });
-
+                // ヘッダー更新
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth();
+                currentMonthElement.textContent = `${year}年${month + 1}月`;
                 
-                document.getElementById('current-month').textContent = 
-                    `${year}年${month + 1}月`;
-
+                // 既存の日付セルをクリア（曜日ヘッダーは残す）
+                while (calendarMain.children.length > 7) {
+                    calendarMain.removeChild(calendarMain.lastChild);
+                }
+                
+                // 月の最初の日と最後の日を取得
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
-                const startDay = firstDay.getDay();
-                const totalDays = lastDay.getDate();
-
-                for (let i = 0; i < startDay; i++) {
-                    const emptyDay = document.createElement('div');
-                    emptyDay.className = 'day empty';
-                    calendarMain.appendChild(emptyDay);
-                }
-
-                for (let date = 1; date <= totalDays; date++) {
-                    const dayDiv = document.createElement('div');
-                    const dayOfWeek = (startDay + date - 1) % 7;
-                    
-                    dayDiv.className = 'day';
-                    if (dayOfWeek === 0) dayDiv.classList.add('sunday');
-                    if (dayOfWeek === 6) dayDiv.classList.add('saturday');
-                    
-                    if (this.selectedDate && 
-                        this.selectedDate.getFullYear() === year &&
-                        this.selectedDate.getMonth() === month &&
-                        this.selectedDate.getDate() === date) {
-                        dayDiv.classList.add('selected');
-                    }
-                    
-                    dayDiv.innerHTML = `<div class="day-number">${date}</div>`;
-                    dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-                    
-                    this.renderDayTotal(dayDiv, year, month, date);
-                    calendarMain.appendChild(dayDiv);
-                }
-
-                const totalCells = startDay + totalDays;
-                const remainingCells = 42 - totalCells;
-                for (let i = 0; i < remainingCells; i++) {
-                    const emptyDay = document.createElement('div');
-                    emptyDay.className = 'day empty';
-                    calendarMain.appendChild(emptyDay);
-                }
-
-                this.updateTotalAmount();
-            }
-
-            async renderDayTotal(dayElement, year, month, day) {
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const startDate = new Date(firstDay);
+                startDate.setDate(startDate.getDate() - firstDay.getDay());
                 
-                try {
-                    const transactions = await this.getTransactionsByDate(dateStr);
-                    let dayTotal = 0;
-                    let hasError = false;
-
-                    for (const transaction of transactions) {
-                        if (this.isErrorData(transaction)) {
-                            hasError = true;
-                            continue;
-                        }
-                        dayTotal += (transaction.returnAmount - transaction.investmentAmount);
-                    }
-
-                    if (hasError) {
-                        dayElement.classList.add('has-error');
-                    }
-
-                    if (dayTotal !== 0 || hasError) {
-                        const totalEl = document.createElement('div');
-                        
-                        if (hasError) {
-                            totalEl.className = 'daily-total error';
-                            totalEl.textContent = 'データエラー';
-                        } else {
-                            totalEl.className = `daily-total ${dayTotal > 0 ? 'income' : 'expense'}`;
-                            const formattedAmount = this.formatAmountWithFontSize(dayTotal);
-                            totalEl.innerHTML = formattedAmount;
-                        }
-                        
-                        dayElement.appendChild(totalEl);
-                    }
-
-                } catch (error) {
-                    console.error('取引データの取得に失敗:', error);
-                }
-            }
-
-            formatAmountWithFontSize(amount) {
-                const absAmount = Math.abs(amount);
-                let fontSize = '0.75rem';
+                const endDate = new Date(lastDay);
+                endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()));
                 
-                if (absAmount >= 1000000) {
-                    fontSize = '0.65rem';
-                }
+                // カレンダー日付を生成
+                let currentDate = new Date(startDate);
+                let monthlyTotal = 0;
                 
-                if (absAmount >= 100000000) {
-                    fontSize = '0.55rem';
-                }
-                
-                const formattedAmount = absAmount.toLocaleString();
-                const sign = amount > 0 ? '+' : '-';
-                
-                return `<span style="font-size: ${fontSize}">${sign}${formattedAmount}</span>`;
-            }
-
-            async getTransactionsByDate(date) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['transactions'], 'readonly');
-                    const store = transaction.objectStore('transactions');
-                    const index = store.index('date');
-                    const range = IDBKeyRange.only(date);
-                    const request = index.getAll(range);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
-            async updateTotalAmount() {
-                try {
-                    const year = this.currentDate.getFullYear();
-                    const month = this.currentDate.getMonth();
-                    const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-                    const endDate = `${year}-${String(month + 1).padStart(2, '0')}-31`;
+                while (currentDate <= endDate) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'day';
                     
-                    const transactions = await this.getTransactionsByRange(startDate, endDate);
-                    
-                    let total = 0;
-                    let hasError = false;
-                    
-                    for (const transaction of transactions) {
-                        if (this.isErrorData(transaction)) {
-                            hasError = true;
-                            continue;
-                        }
-                        total += (transaction.returnAmount - transaction.investmentAmount);
-                    }
-
-                    const totalElement = document.getElementById('total-amount');
-                    if (hasError) {
-                        totalElement.textContent = 'データエラー';
-                        totalElement.style.color = '#f44336';
+                    if (currentDate.getMonth() !== month) {
+                        dayElement.classList.add('empty');
                     } else {
-                        totalElement.textContent = `¥${total.toLocaleString()}`;
-                        totalElement.style.color = total >= 0 ? '#27ae60' : '#e74c3c';
+                        const dateStr = this.formatDate(currentDate);
+                        dayElement.dataset.date = dateStr;
+                        
+                        // 曜日によるスタイル設定
+                        if (currentDate.getDay() === 0) {
+                            dayElement.classList.add('sunday');
+                        } else if (currentDate.getDay() === 6) {
+                            dayElement.classList.add('saturday');
+                        }
+                        
+                        // 選択された日をハイライト
+                        if (this.selectedDate && 
+                            this.selectedDate.toDateString() === currentDate.toDateString()) {
+                            dayElement.classList.add('selected');
+                        }
+                        
+                        // 日付番号
+                        const dayNumber = document.createElement('div');
+                        dayNumber.className = 'day-number';
+                        dayNumber.textContent = currentDate.getDate();
+                        dayElement.appendChild(dayNumber);
+                        
+                        // その日の取引データを計算
+                        const dailyData = this.getDailyTransactions(dateStr);
+                        const dailyTotal = dailyData.total;
+                        
+                        if (dailyData.hasError) {
+                            dayElement.classList.add('has-error');
+                        }
+                        
+                        if (dailyData.transactions.length > 0) {
+                            const totalElement = document.createElement('div');
+                            totalElement.className = 'daily-total';
+                            
+                            if (dailyTotal > 0) {
+                                totalElement.classList.add('income');
+                                totalElement.textContent = `+¥${dailyTotal.toLocaleString()}`;
+                            } else if (dailyTotal < 0) {
+                                totalElement.classList.add('expense');
+                                totalElement.textContent = `¥${dailyTotal.toLocaleString()}`;
+                            } else {
+                                totalElement.classList.add('zero');
+                                totalElement.textContent = '¥0';
+                            }
+                            
+                            if (dailyData.hasError) {
+                                totalElement.classList.add('error');
+                                totalElement.textContent = 'エラー';
+                            }
+                            
+                            dayElement.appendChild(totalElement);
+                            monthlyTotal += dailyTotal;
+                        }
                     }
-
-                } catch (error) {
-                    console.error('合計金額の更新に失敗:', error);
-                    const totalElement = document.getElementById('total-amount');
-                    totalElement.textContent = '計算エラー';
-                    totalElement.style.color = '#f44336';
+                    
+                    calendarMain.appendChild(dayElement);
+                    currentDate.setDate(currentDate.getDate() + 1);
                 }
-            }
-
-            async getTransactionsByRange(startDate, endDate) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['transactions'], 'readonly');
-                    const store = transaction.objectStore('transactions');
-                    const index = store.index('date');
-                    const range = IDBKeyRange.bound(startDate, endDate);
-                    const request = index.getAll(range);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-
-            async showDayDetails(dateStr) {
-                const dayDetails = document.getElementById('day-details');
                 
-                try {
-                    const transactions = await this.getTransactionsByDate(dateStr);
-                    const validTransactions = transactions.filter(t => !this.isErrorData(t));
-                    const errorTransactions = transactions.filter(t => this.isErrorData(t));
+                // 月合計を表示
+                const totalAmountElement = document.getElementById('total-amount');
+                totalAmountElement.textContent = monthlyTotal >= 0 ? 
+                    `¥${monthlyTotal.toLocaleString()}` : 
+                    `-¥${Math.abs(monthlyTotal).toLocaleString()}`;
+                totalAmountElement.style.color = monthlyTotal >= 0 ? '#27ae60' : '#e74c3c';
+            }
+
+            // 日付をYYYY-MM-DD形式に変換
+            formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // 日別取引データ取得
+            getDailyTransactions(dateStr) {
+                const dailyTransactions = this.transactions.filter(t => t.date === dateStr);
+                let total = 0;
+                let hasError = false;
+                
+                dailyTransactions.forEach(transaction => {
+                    const net = transaction.returnAmount - transaction.investmentAmount;
+                    total += net;
                     
-                    if (validTransactions.length === 0 && errorTransactions.length === 0) {
-                        dayDetails.innerHTML = `
-                            <h3>${dateStr.replace(/-/g, '/')}</h3>
-                            <div class="no-transactions">取引がありません</div>
-                        `;
-                        return;
+                    // エラーチェック
+                    if (transaction.investmentAmount === 0 && transaction.returnAmount === 0) {
+                        hasError = true;
                     }
-                    
-                    let html = `<h3>${dateStr.replace(/-/g, '/')}</h3>`;
-                    
-                    if (errorTransactions.length > 0) {
-                        html += `
-                            <div class="error-notice">
-                                ${errorTransactions.length}件のエラーデータがあります。
-                                <button class="delete-btn" onclick="financeApp.cleanupDayData('${dateStr}')">修復</button>
-                            </div>
-                        `;
+                });
+                
+                return {
+                    transactions: dailyTransactions,
+                    total,
+                    hasError
+                };
+            }
+
+            // 日詳細表示
+            showDayDetails(dateStr) {
+                const detailsElement = document.getElementById('day-details');
+                const dailyData = this.getDailyTransactions(dateStr);
+                
+                let html = `<h3>${new Date(dateStr).getMonth() + 1}月${new Date(dateStr).getDate()}日の取引</h3>`;
+                
+                if (dailyData.transactions.length === 0) {
+                    html += '<div class="no-transactions">取引がありません</div>';
+                } else {
+                    if (dailyData.hasError) {
+                        html += '<div class="error-notice">エラー：投資額と回収額が両方0の取引があります</div>';
                     }
                     
                     html += '<div class="transaction-list">';
                     
-                    validTransactions.forEach(transaction => {
-                        const amount = transaction.returnAmount - transaction.investmentAmount;
-                        const amountClass = amount >= 0 ? 'positive' : 'negative';
-                        const amountSign = amount >= 0 ? '+' : '';
+                    dailyData.transactions.forEach((transaction, index) => {
+                        const netAmount = transaction.returnAmount - transaction.investmentAmount;
+                        const hasError = transaction.investmentAmount === 0 && transaction.returnAmount === 0;
                         
                         html += `
-                            <div class="transaction-item">
-                                <div class="transaction-actions">
-                                    <button class="delete-btn" onclick="financeApp.deleteTransactionAndRefresh(${transaction.id})">削除</button>
-                                </div>
-                                <div class="transaction-amount ${amountClass}">
-                                    ${amountSign}¥${amount.toLocaleString()}
+                            <div class="transaction-item ${hasError ? 'has-error' : ''}">
+                                <div class="transaction-amount ${netAmount >= 0 ? 'positive' : 'negative'} ${hasError ? 'error' : ''}">
+                                    ${netAmount >= 0 ? '+' : ''}¥${netAmount.toLocaleString()}
                                 </div>
                                 <div class="transaction-details">
                                     投資: ¥${transaction.investmentAmount.toLocaleString()} | 
                                     回収: ¥${transaction.returnAmount.toLocaleString()}
                                 </div>
-                            </div>
-                        `;
-                    });
-                    
-                    errorTransactions.forEach(transaction => {
-                        html += `
-                            <div class="transaction-item has-error">
+                                ${transaction.machineName ? `<div class="transaction-machine">${transaction.machineName}</div>` : ''}
+                                ${transaction.shopName ? `<div class="transaction-shop">${transaction.shopName}</div>` : ''}
                                 <div class="transaction-actions">
-                                    <button class="delete-btn" onclick="financeApp.deleteTransactionAndRefresh(${transaction.id})">削除</button>
-                                </div>
-                                <div class="transaction-amount error">
-                                    データエラー
-                                </div>
-                                <div class="transaction-details">
-                                    投資: ${transaction.investmentAmount} | 
-                                    回収: ${transaction.returnAmount}
+                                    <button class="edit-btn" data-index="${index}" data-date="${dateStr}">編集</button>
+                                    <button class="delete-btn" data-index="${index}" data-date="${dateStr}">削除</button>
                                 </div>
                             </div>
                         `;
                     });
                     
                     html += '</div>';
-                    dayDetails.innerHTML = html;
-                    
-                } catch (error) {
-                    console.error('取引データの取得に失敗:', error);
-                    dayDetails.innerHTML = `
-                        <h3>${dateStr.replace(/-/g, '/')}</h3>
-                        <div class="no-transactions">データの読み込みに失敗しました</div>
-                    `;
                 }
-            }
-
-            async cleanupDayData(dateStr) {
-                try {
-                    const transactions = await this.getTransactionsByDate(dateStr);
-                    let deletedCount = 0;
-                    
-                    for (const transaction of transactions) {
-                        if (this.isErrorData(transaction)) {
-                            await this.deleteTransaction(transaction.id);
-                            deletedCount++;
+                
+                detailsElement.innerHTML = html;
+                
+                // 編集ボタンのイベントリスナーを追加
+                detailsElement.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.dataset.index);
+                        const dateStr = e.target.dataset.date;
+                        this.editTransaction(index, dateStr);
+                    });
+                });
+                
+                // 削除ボタンのイベントリスナーを追加
+                detailsElement.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.dataset.index);
+                        const dateStr = e.target.dataset.date;
+                        if (confirm('この取引を削除しますか？')) {
+                            this.deleteTransaction(index, dateStr);
                         }
-                    }
-                    
-                    if (deletedCount > 0) {
-                        alert(`${deletedCount}件のエラーデータを削除しました`);
-                        this.renderCalendar();
-                        this.showDayDetails(dateStr);
-                    }
-                    
-                } catch (error) {
-                    console.error('エラーデータの削除に失敗:', error);
-                    alert('エラーデータの削除に失敗しました');
-                }
+                    });
+                });
             }
 
-            async deleteTransactionAndRefresh(id) {
-                if (confirm('この取引を削除しますか？')) {
-                    try {
-                        await this.deleteTransaction(id);
-                        this.renderCalendar();
-                        
-                        if (this.selectedDate) {
-                            const dateStr = this.selectedDate.toISOString().split('T')[0];
-                            this.showDayDetails(dateStr);
+            // 取引編集
+            editTransaction(index, dateStr) {
+                // 該当する日付の取引をすべて取得
+                const dailyTransactions = this.transactions.filter(t => t.date === dateStr);
+                const transaction = dailyTransactions[index];
+                
+                // モーダルを編集モードで表示
+                document.getElementById('transaction-modal-title').textContent = '取引を編集';
+                document.getElementById('edit-transaction-id').value = this.transactions.indexOf(transaction);
+                document.getElementById('transaction-date').value = transaction.date;
+                document.getElementById('investment-amount').value = transaction.investmentAmount;
+                document.getElementById('return-amount').value = transaction.returnAmount;
+                document.getElementById('machine-name').value = transaction.machineName || '';
+                document.getElementById('shop-name').value = transaction.shopName || '';
+                
+                document.getElementById('transaction-modal').style.display = 'flex';
+            }
+
+            // 取引保存（新規追加と編集の両方に対応）
+            saveTransaction(investmentAmount, returnAmount, machineName, shopName) {
+                const date = document.getElementById('transaction-date').value;
+                const editId = document.getElementById('edit-transaction-id').value;
+                
+                const transactionData = {
+                    date: date,
+                    investmentAmount: investmentAmount,
+                    returnAmount: returnAmount,
+                    machineName: machineName,
+                    shopName: shopName,
+                    createdAt: new Date()
+                };
+                
+                if (editId !== '') {
+                    // 編集モード
+                    const index = parseInt(editId);
+                    this.transactions[index] = transactionData;
+                } else {
+                    // 新規追加モード
+                    this.transactions.push(transactionData);
+                }
+                
+                this.saveToLocalStorage();
+            }
+
+            // 取引削除
+            deleteTransaction(index, dateStr) {
+                // 該当する日付の取引をすべて取得
+                const dailyTransactions = this.transactions.filter(t => t.date === dateStr);
+                
+                // グローバルなインデックスを見つける
+                let globalIndex = -1;
+                let count = 0;
+                for (let i = 0; i < this.transactions.length; i++) {
+                    if (this.transactions[i].date === dateStr) {
+                        if (count === index) {
+                            globalIndex = i;
+                            break;
                         }
-                    } catch (error) {
-                        console.error('取引の削除に失敗:', error);
-                        alert('取引の削除に失敗しました');
+                        count++;
                     }
+                }
+                
+                if (globalIndex !== -1) {
+                    this.transactions.splice(globalIndex, 1);
+                    this.saveToLocalStorage();
+                    this.renderCalendar();
+                    this.showDayDetails(dateStr);
                 }
             }
 
+            // LocalStorageに保存
+            saveToLocalStorage() {
+                localStorage.setItem('financeTransactions', JSON.stringify(this.transactions));
+            }
+
+            // 月選択モーダル用の年・月リストを設定
             populateMonthPicker() {
                 const yearSelect = document.getElementById('year-select');
                 const monthSelect = document.getElementById('month-select');
                 
-                const currentYear = this.currentDate.getFullYear();
-                
-                for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+                // 年リスト（2020-2030）
+                for (let year = 2020; year <= 2030; year++) {
                     const option = document.createElement('option');
                     option.value = year;
                     option.textContent = `${year}年`;
-                    if (year === currentYear) {
+                    if (year === this.currentDate.getFullYear()) {
                         option.selected = true;
                     }
                     yearSelect.appendChild(option);
                 }
                 
+                // 月リスト
                 for (let month = 0; month < 12; month++) {
                     const option = document.createElement('option');
                     option.value = month;
@@ -1058,7 +1194,256 @@
                 }
             }
 
+            // 年次統計表示
+            showYearlyStats() {
+                const stats = this.getYearlyStats();
+                let html = '<div class="stats-section">';
+                html += '<h3>年次別収支</h3>';
+                html += '<div class="year-stats">';
+                
+                stats.forEach(stat => {
+                    html += `
+                        <div class="year-stat-item">
+                            <div class="year-stat-year">${stat.year}年</div>
+                            <div class="year-stat-amount ${stat.total >= 0 ? 'positive' : 'negative'}">
+                                ${stat.total >= 0 ? '+' : ''}¥${stat.total.toLocaleString()}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+                
+                document.getElementById('stats-title').textContent = '年次別収支';
+                document.getElementById('stats-content').innerHTML = html;
+                document.getElementById('stats-modal').style.display = 'flex';
+            }
+
+            // 店舗別統計表示
+            showShopStats() {
+                const stats = this.getShopStats();
+                let html = '<div class="stats-section">';
+                html += '<h3>店舗別収支</h3>';
+                
+                if (stats.length === 0) {
+                    html += '<div class="no-transactions">店舗別のデータがありません</div>';
+                } else {
+                    html += '<div class="shop-stats">';
+                    
+                    stats.forEach(stat => {
+                        html += `
+                            <div class="shop-stat-item">
+                                <div class="shop-stat-name">${stat.name || '未設定'}</div>
+                                <div class="shop-stat-amount ${stat.total >= 0 ? 'positive' : 'negative'}">
+                                    ${stat.total >= 0 ? '+' : ''}¥${stat.total.toLocaleString()}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+                
+                document.getElementById('stats-title').textContent = '店舗別収支';
+                document.getElementById('stats-content').innerHTML = html;
+                document.getElementById('stats-modal').style.display = 'flex';
+            }
+
+            // 機種別統計表示
+            showMachineStats() {
+                const stats = this.getMachineStats();
+                let html = '<div class="stats-section">';
+                html += '<h3>機種別収支</h3>';
+                
+                if (stats.length === 0) {
+                    html += '<div class="no-transactions">機種別のデータがありません</div>';
+                } else {
+                    html += '<div class="machine-stats">';
+                    
+                    stats.forEach(stat => {
+                        html += `
+                            <div class="machine-stat-item">
+                                <div class="machine-stat-name">${stat.name || '未設定'}</div>
+                                <div class="machine-stat-amount ${stat.total >= 0 ? 'positive' : 'negative'}">
+                                    ${stat.total >= 0 ? '+' : ''}¥${stat.total.toLocaleString()}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+                
+                document.getElementById('stats-title').textContent = '機種別収支';
+                document.getElementById('stats-content').innerHTML = html;
+                document.getElementById('stats-modal').style.display = 'flex';
+            }
+
+            // 生涯通算統計表示
+            showLifetimeStats() {
+                const lifetimeTotal = this.getLifetimeTotal();
+                
+                let html = '<div class="stats-section">';
+                html += '<h3>生涯通算収支</h3>';
+                html += '<div class="lifetime-stats">';
+                html += '<div>全期間の合計収支</div>';
+                html += `<div class="lifetime-amount ${lifetimeTotal >= 0 ? 'positive' : 'negative'}">
+                    ${lifetimeTotal >= 0 ? '+' : ''}¥${lifetimeTotal.toLocaleString()}
+                </div>`;
+                html += '</div></div>';
+                
+                document.getElementById('stats-title').textContent = '生涯通算収支';
+                document.getElementById('stats-content').innerHTML = html;
+                document.getElementById('stats-modal').style.display = 'flex';
+            }
+
+            // 年次統計取得
+            getYearlyStats() {
+                const yearlyStats = {};
+                
+                this.transactions.forEach(transaction => {
+                    const year = new Date(transaction.date).getFullYear();
+                    const net = transaction.returnAmount - transaction.investmentAmount;
+                    
+                    if (!yearlyStats[year]) {
+                        yearlyStats[year] = 0;
+                    }
+                    yearlyStats[year] += net;
+                });
+                
+                return Object.keys(yearlyStats).map(year => ({
+                    year: parseInt(year),
+                    total: yearlyStats[year]
+                })).sort((a, b) => b.year - a.year);
+            }
+
+            // 店舗別統計取得
+            getShopStats() {
+                const shopStats = {};
+                
+                this.transactions.forEach(transaction => {
+                    const shopName = transaction.shopName || '未設定';
+                    const net = transaction.returnAmount - transaction.investmentAmount;
+                    
+                    if (!shopStats[shopName]) {
+                        shopStats[shopName] = 0;
+                    }
+                    shopStats[shopName] += net;
+                });
+                
+                return Object.keys(shopStats).map(shopName => ({
+                    name: shopName,
+                    total: shopStats[shopName]
+                })).sort((a, b) => b.total - a.total);
+            }
+
+            // 機種別統計取得
+            getMachineStats() {
+                const machineStats = {};
+                
+                this.transactions.forEach(transaction => {
+                    const machineName = transaction.machineName || '未設定';
+                    const net = transaction.returnAmount - transaction.investmentAmount;
+                    
+                    if (!machineStats[machineName]) {
+                        machineStats[machineName] = 0;
+                    }
+                    machineStats[machineName] += net;
+                });
+                
+                return Object.keys(machineStats).map(machineName => ({
+                    name: machineName,
+                    total: machineStats[machineName]
+                })).sort((a, b) => b.total - a.total);
+            }
+
+            // 生涯通算取得
+            getLifetimeTotal() {
+                let total = 0;
+                this.transactions.forEach(transaction => {
+                    total += transaction.returnAmount - transaction.investmentAmount;
+                });
+                return total;
+            }
+
+            // データ修復
+            cleanupErrorData() {
+                const initialLength = this.transactions.length;
+                this.transactions = this.transactions.filter(transaction => 
+                    !(transaction.investmentAmount === 0 && transaction.returnAmount === 0)
+                );
+                this.saveToLocalStorage();
+                return initialLength - this.transactions.length;
+            }
+
+            // トップページへ移動
+            goToTopPage() {
+                window.location.href = 'index.html';
+            }
+
+            // イベントリスナー設定
             setupEventListeners() {
+                // ハンバーガーメニュー
+                document.getElementById('menu-toggle').addEventListener('click', () => {
+                    this.openMenu();
+                });
+
+                document.getElementById('close-menu').addEventListener('click', () => {
+                    this.closeMenu();
+                });
+
+                // メニュー項目
+                document.getElementById('go-to-top').addEventListener('click', () => {
+                    this.goToTopPage();
+                    this.closeMenu();
+                });
+
+                document.getElementById('show-yearly-stats').addEventListener('click', () => {
+                    this.showYearlyStats();
+                    this.closeMenu();
+                });
+
+                document.getElementById('show-lifetime-stats').addEventListener('click', () => {
+                    this.showLifetimeStats();
+                    this.closeMenu();
+                });
+
+                document.getElementById('show-shop-stats').addEventListener('click', () => {
+                    this.showShopStats();
+                    this.closeMenu();
+                });
+
+                document.getElementById('show-machine-stats').addEventListener('click', () => {
+                    this.showMachineStats();
+                    this.closeMenu();
+                });
+
+                document.getElementById('show-current-month').addEventListener('click', () => {
+                    this.currentDate = new Date();
+                    this.currentDate.setDate(1);
+                    this.renderCalendar();
+                    this.closeMenu();
+                });
+
+                // メニュー外クリックで閉じる
+                document.addEventListener('click', (e) => {
+                    const sideMenu = document.getElementById('side-menu');
+                    const menuToggle = document.getElementById('menu-toggle');
+                    if (!sideMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                        this.closeMenu();
+                    }
+                });
+
+                // 統計モーダルを閉じる
+                document.getElementById('close-stats').addEventListener('click', () => {
+                    document.getElementById('stats-modal').style.display = 'none';
+                });
+
+                // 月選択
                 const monthPickerModal = document.getElementById('month-picker-modal');
                 document.getElementById('current-month').addEventListener('click', () => {
                     monthPickerModal.style.display = 'flex';
@@ -1079,6 +1464,7 @@
                     monthPickerModal.style.display = 'none';
                 });
 
+                // 月移動
                 document.getElementById('prev-month').addEventListener('click', () => {
                     this.currentDate.setMonth(this.currentDate.getMonth() - 1);
                     this.selectedDate = null;
@@ -1093,26 +1479,34 @@
                     document.getElementById('day-details').innerHTML = '';
                 });
 
-                document.getElementById('cleanup-data').addEventListener('click', async () => {
+                // データ修復
+                document.getElementById('cleanup-data').addEventListener('click', () => {
                     if (confirm('全データをスキャンしてエラーデータを修復しますか？')) {
-                        await this.cleanupErrorData();
+                        const cleanedCount = this.cleanupErrorData();
                         this.renderCalendar();
                         if (this.selectedDate) {
-                            const dateStr = this.selectedDate.toISOString().split('T')[0];
+                            const dateStr = this.formatDate(this.selectedDate);
                             this.showDayDetails(dateStr);
                         }
-                        alert('データ修復が完了しました');
+                        alert(`データ修復が完了しました（${cleanedCount}件のエラーデータを削除）`);
                     }
                 });
 
+                // 取引追加・編集
                 const modal = document.getElementById('transaction-modal');
                 const addBtn = document.getElementById('add-transaction');
                 const cancelBtn = document.getElementById('cancel-btn');
                 const form = document.getElementById('transaction-form');
 
                 addBtn.addEventListener('click', () => {
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = this.formatDate(new Date());
+                    document.getElementById('transaction-modal-title').textContent = '投資取引を追加';
+                    document.getElementById('edit-transaction-id').value = '';
                     document.getElementById('transaction-date').value = today;
+                    document.getElementById('investment-amount').value = '';
+                    document.getElementById('return-amount').value = '';
+                    document.getElementById('machine-name').value = '';
+                    document.getElementById('shop-name').value = '';
                     modal.style.display = 'flex';
                 });
 
@@ -1121,10 +1515,15 @@
                     form.reset();
                 });
 
-                form.addEventListener('submit', async (e) => {
+                form.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const investmentAmount = parseInt(document.getElementById('investment-amount').value) || 0;
-                    const returnAmount = parseInt(document.getElementById('return-amount').value) || 0;
+                    
+                    const investmentAmount = document.getElementById('investment-amount').value === '' ? 0 : 
+                        parseInt(document.getElementById('investment-amount').value);
+                    const returnAmount = document.getElementById('return-amount').value === '' ? 0 : 
+                        parseInt(document.getElementById('return-amount').value);
+                    const machineName = document.getElementById('machine-name').value || '';
+                    const shopName = document.getElementById('shop-name').value || '';
                     
                     if (!Number.isFinite(investmentAmount) || investmentAmount < 0) {
                         alert('投資金額は0以上の数値を入力してください');
@@ -1136,60 +1535,50 @@
                         return;
                     }
 
-                    await this.saveTransaction();
+                    this.saveTransaction(investmentAmount, returnAmount, machineName, shopName);
                     modal.style.display = 'none';
                     form.reset();
                     this.renderCalendar();
                     
                     if (this.selectedDate) {
-                        const dateStr = this.selectedDate.toISOString().split('T')[0];
+                        const dateStr = this.formatDate(this.selectedDate);
                         this.showDayDetails(dateStr);
                     }
                 });
 
-                document.getElementById('calendar-main').addEventListener('click', async (e) => {
+                // カレンダークリック
+                document.getElementById('calendar-main').addEventListener('click', (e) => {
                     const dayElement = e.target.closest('.day');
                     if (dayElement && dayElement.dataset.date && !dayElement.classList.contains('empty')) {
                         const dateStr = dayElement.dataset.date;
                         
                         if (this.selectedDate && 
-                            this.selectedDate.toISOString().split('T')[0] === dateStr) {
+                            this.formatDate(this.selectedDate) === dateStr) {
+                            // 同じ日を再度クリックした場合は取引追加モーダルを表示
+                            document.getElementById('transaction-modal-title').textContent = '投資取引を追加';
+                            document.getElementById('edit-transaction-id').value = '';
                             document.getElementById('transaction-date').value = dateStr;
+                            document.getElementById('investment-amount').value = '';
+                            document.getElementById('return-amount').value = '';
+                            document.getElementById('machine-name').value = '';
+                            document.getElementById('shop-name').value = '';
                             modal.style.display = 'flex';
                         } else {
+                            // 新しい日を選択した場合は詳細を表示
                             this.selectedDate = new Date(dateStr);
                             this.renderCalendar();
                             this.showDayDetails(dateStr);
                         }
                     }
                 });
-            }
 
-            async saveTransaction() {
-                const formData = {
-                    date: document.getElementById('transaction-date').value,
-                    investmentAmount: parseInt(document.getElementById('investment-amount').value) || 0,
-                    returnAmount: parseInt(document.getElementById('return-amount').value) || 0
-                };
-
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['transactions'], 'readwrite');
-                    const store = transaction.objectStore('transactions');
-                    
-                    const request = store.add({
-                        date: formData.date,
-                        investmentAmount: formData.investmentAmount,
-                        returnAmount: formData.returnAmount,
-                        createdAt: new Date().toISOString()
-                    });
-
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
+                console.log('All event listeners setup successfully');
             }
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        // アプリケーションの初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing app...');
             window.financeApp = new FinanceCalendar();
         });
     </script>
